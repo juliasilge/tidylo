@@ -7,18 +7,18 @@
 <https://doi.org/10.1093/pan/mpn018>
 }
 \usage{
-bind_log_odds(tbl, item, feature, n)
+bind_log_odds(tbl, feature, set, n)
 }
 \arguments{
-\item{tbl}{A tidy dataset with one row per item and feature}
+\item{tbl}{A tidy dataset with one row per feature and set}
 
-\item{item}{Column of items for identifying differences, such as words or
+\item{feature}{Column of features for identifying differences, such as words or
 bigrams with text data}
 
-\item{feature}{Column of features between which to compare items, such as
+\item{set}{Column of sets between which to compare features, such as
 documents for text data}
 
-\item{n}{Column containing item-feature counts}
+\item{n}{Column containing feature-set counts}
 }
 \description{
 Calculate and bind the log odds ratio, weighted by an uninformative Dirichlet
@@ -27,7 +27,7 @@ is added as a column. This functions supports non-standard evaluation through
 the tidyeval framework.
 }
 \details{
-The arguments \code{item}, \code{feature}, and \code{n}
+The arguments \code{feature}, \code{set}, and \code{n}
 are passed by expression and support \link[rlang]{quasiquotation};
 you can unquote strings and symbols. Grouping is preserved but ignored.
 

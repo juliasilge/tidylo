@@ -84,7 +84,7 @@ Why you might choose log odds over tf-idf? TODO for Tyler
 
 ## Counting things other than words
 
-Text analysis is a main motivator for this implementation of weighted log odds, but this is a general approach for measuring how much more likely one item (any kind of item, not just a word or bigram) is to be associated than another for some set of features (any kind of feature, not just a document or book).
+Text analysis is a main motivator for this implementation of weighted log odds, but this is a general approach for measuring how much more likely one feature (any kind of feature, not just a word or bigram) is to be associated than another for some set or group (any kind of set, not just a document or book).
 
 To demonstrate this, let's look at everybody's favorite data about cars. What do we know about the relationship between number of gears and engine shape `vs`?
 
@@ -104,4 +104,4 @@ gear_counts %>%
 
 For engine shape `vs = 0`, having three gears has the highest log odds while for engine shape `vs = 1`, hvaing four gears has the highest log odds. This dataset is small enough that you can look at the count data and see how this is working. 
 
-More importantly, you can notice that this approach is useful both in the initial motivating example of text data but also more generally whenever you have counts in some kind of groups and you want to find what is more likely to come from which group, compared to the other groups.
+More importantly, you can notice that this approach is useful both in the initial motivating example of text data but also more generally whenever you have counts in some kind of groups and you want to find what feature is more likely to come from which group, compared to the other groups.

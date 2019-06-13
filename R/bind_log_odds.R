@@ -5,14 +5,14 @@
 #' is added as a column. This functions supports non-standard evaluation through
 #' the tidyeval framework.
 #'
-#' @param tbl A tidy dataset with one row per item and feature
-#' @param item Column of items for identifying differences, such as words or
+#' @param tbl A tidy dataset with one row per feature and set
+#' @param feature Column of features for identifying differences, such as words or
 #' bigrams with text data
-#' @param feature Column of features between which to compare items, such as
+#' @param set Column of sets between which to compare features, such as
 #' documents for text data
-#' @param n Column containing item-feature counts
+#' @param n Column containing feature-set counts
 #'
-#' @details The arguments \code{item}, \code{feature}, and \code{n}
+#' @details The arguments \code{feature}, \code{set}, and \code{n}
 #' are passed by expression and support \link[rlang]{quasiquotation};
 #' you can unquote strings and symbols. Grouping is preserved but ignored.
 #'
@@ -40,25 +40,25 @@
 #' @importFrom dplyr count left_join mutate rename group_by ungroup group_vars
 #' @export
 
-bind_log_odds <- function(tbl, item, feature, n) {
-    item <- enquo(item)
+bind_log_odds <- function(tbl, feature, set, n) {
     feature <- enquo(feature)
+    set <- enquo(set)
     n_col <- enquo(n)
 
     ## groups are preserved but ignored
     grouping <- group_vars(tbl)
     tbl <- ungroup(tbl)
 
-    freq1_df <- count(tbl, !!item, wt = !!n_col)
+    freq1_df <- count(tbl, !!feature, wt = !!n_col)
     freq1_df <- rename(freq1_df, freq1 = n)
 
-    freq2_df <- count(tbl, !!feature, wt = !!n_col)
+    freq2_df <- count(tbl, !!set, wt = !!n_col)
     freq2_df <- rename(freq2_df, freq2 = n)
 
-    df_joined <- left_join(tbl, freq1_df, by = as_name(item))
+    df_joined <- left_join(tbl, freq1_df, by = as_name(feature))
     df_joined <- mutate(df_joined, freqnotthem = freq1 - !!n_col)
     df_joined <- mutate(df_joined, total = sum(!!n_col))
-    df_joined <- left_join(df_joined, freq2_df, by = as_name(feature))
+    df_joined <- left_join(df_joined, freq2_df, by = as_name(set))
     df_joined <- mutate(df_joined,
                         freq2notthem = total - freq2,
                         l1them = (!!n_col + freq1) / ((total + freq2) - (!!n_col + freq1)),
