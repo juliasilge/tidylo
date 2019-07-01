@@ -8,13 +8,13 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
+  
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   warning = FALSE, message = FALSE,
   collapse = TRUE,
   comment = "#>")
-  
+
 suppressPackageStartupMessages(library(ggplot2))
 theme_set(theme_light())
 ```
@@ -31,18 +31,20 @@ Let's look at just such an example.
 
 ## Jane Austen and bigrams
 
-Let's explore the [six published, completed novels of Jane Austen](https://github.com/juliasilge/janeaustenr) and use the [tidytext](https://github.com/juliasilge/tidytext) package to count up the bigrams (sequences of two adjacent words) in each novel. This weighted log odds approach would work equally well for single words.
+Let's explore the [six published, completed novels of Jane Austen](https://github.com/juliasilge/janeaustenr) and use the [tidytext](https://github.com/juliasilge/tidytext) package to count up the bigrams (sequences of two adjacent words) in each novel, focusing on bigrams that include *no upper case letters*. (We can look at differences other than those involving proper nouns this way.) This weighted log odds approach would work equally well for single words, or other kinds of n-grams.
 
 ```{r bigram_counts}
 library(dplyr)
 library(janeaustenr)
 library(tidytext)
+library(stringr)
 
 tidy_bigrams <- austen_books() %>%
-     unnest_tokens(bigram, text, token="ngrams", n = 2)
+  unnest_tokens(bigram, text, token="ngrams", n = 2, to_lower = FALSE) %>%
+  filter(!str_detect(bigram, "[A-Z]"))
 
 bigram_counts <- tidy_bigrams %>%
-     count(book, bigram, sort = TRUE)
+  count(book, bigram, sort = TRUE)
 
 bigram_counts
 ```
@@ -61,7 +63,7 @@ bigram_log_odds %>%
   arrange(-log_odds)
 ```
 
-The highest log odds bigrams (bigrams more likely to come from each book, compared to the others) involve proper nouns. We can make a visualization as well.
+The highest log odds bigrams (bigrams more likely to come from each book, compared to the others) involve concepts specific to each novel, such the pump room in *Northanger Abbey* and sister/mother figures in *Sense & Sensibility*. We can make a visualization as well.
 
 ```{r bigram_plot, dependson="bigram_log_odds", fig.width=10, fig.height=7}
 library(ggplot2)
@@ -80,9 +82,9 @@ bigram_log_odds %>%
 
 These bigrams have the highest log odds for each book. 
 
-The proper names of characters tend to be unique from book to book unless you're looking at a series like "Harry Potter". When it comes identifying words or phrases that are unique to a text, a measure like tf-idf does a good job. But because of the way tf-idf is calculated, it cannot distinguish between words that are used in all texts. 
+The proper names of characters tend to be unique from book to book unless you're looking at a series like *Harry Potter*. When it comes identifying words or phrases that are unique to a text, a measure like tf-idf does a good job. But because of the way tf-idf is calculated, it cannot distinguish between words that are used in **all** texts. 
 
-For example, the phrase "had been" is used over 100 times in all six Austen novels. The "idf" in tf-idf stands for "inverse document frequency". When a word is in all the texts, tf-idf is zero for all of them. In weighted log odds, however, each book has a different value: in this case ranging from 3.49 in Persuasion (very high) down to -3.02 in Sense & Sensibility (which suggests something about the style or content is suppressing the phrase). 
+For example, the phrase "had been" is used over 100 times in all six Austen novels. The "idf" in tf-idf stands for "inverse document frequency". When a word is in all the texts, tf-idf is zero for all of them. In weighted log odds, however, each book has a different value; in this case the weighted log odds ranges from `r bigram_log_odds %>% filter(bigram == "had been", book == "Persuasion") %>% pull(log_odds) %>% round(2)` in *Persuasion* (very high) down to `r bigram_log_odds %>% filter(bigram == "had been", book == "Sense & Sensibility") %>% pull(log_odds) %>% round(2)` in *Sense & Sensibility* (which suggests something about the style or content is suppressing the phrase). 
 
 ## Counting things other than words
 
@@ -104,6 +106,6 @@ gear_counts %>%
   bind_log_odds(gear, vs, n)
 ```
 
-For engine shape `vs = 0`, having three gears has the highest log odds while for engine shape `vs = 1`, hvaing four gears has the highest log odds. This dataset is small enough that you can look at the count data and see how this is working. 
+For engine shape `vs = 0`, having three gears has the highest log odds while for engine shape `vs = 1`, having four gears has the highest log odds. This dataset is small enough that you can look at the count data and see how this is working. 
 
 More importantly, you can notice that this approach is useful both in the initial motivating example of text data but also more generally whenever you have counts in some kind of groups and you want to find what feature is more likely to come from which group, compared to the other groups.
