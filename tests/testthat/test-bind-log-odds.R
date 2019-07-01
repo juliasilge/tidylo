@@ -16,7 +16,7 @@ w <- tibble(
 
 test_that("Can calculate weighted log odds", {
     result <- w %>%
-        bind_log_odds(word, document, frequency)
+        bind_log_odds(document, word, frequency)
 
     expect_equal(
         select(w, document, word, frequency),
@@ -30,7 +30,7 @@ test_that("Can calculate weighted log odds", {
     # preserves but ignores groups
     result2 <- w %>%
         group_by(document) %>%
-        bind_log_odds(word, document, frequency)
+        bind_log_odds(document, word, frequency)
 
     expect_equal(length(groups(result2)), 1)
     expect_equal(as.character(groups(result2)[[1]]), "document")
@@ -44,7 +44,7 @@ test_that("Weighted log odds works when the feature is a number", {
         n = c(1, 1, 3, 1, 2, 1)
     )
 
-    result <- bind_log_odds(z, word, id, n)
+    result <- bind_log_odds(z, id, word, n)
     expect_false(any(is.na(result)))
     expect_equal(sum(result$log_odds[1:5] > 0), 5)
     expect_lt(result$log_odds[6], 0)
@@ -69,14 +69,14 @@ test_that("Weighted log odds with tidyeval works", {
     countvar <- quo(frequency)
 
     result <- w %>%
-        bind_log_odds(!!termvar, !!documentvar, !!countvar)
+        bind_log_odds(!!documentvar, !!termvar, !!countvar)
 
     termvar <- sym("word")
     documentvar <- sym("document")
     countvar <- sym("frequency")
 
     result2 <- w %>%
-        bind_log_odds(!!termvar, !!documentvar, !!countvar)
+        bind_log_odds(!!documentvar, !!termvar, !!countvar)
 
 
     expect_equal(
@@ -95,7 +95,7 @@ test_that("Weighted log odds with tidyeval works", {
 
     result3 <- w %>%
         group_by(document) %>%
-        bind_log_odds(!!termvar, !!documentvar, !!countvar)
+        bind_log_odds(!!documentvar, !!termvar, !!countvar)
 
     expect_equal(length(groups(result3)), 1)
     expect_equal(as.character(groups(result3)[[1]]), "document")

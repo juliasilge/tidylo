@@ -7,16 +7,16 @@
 <https://doi.org/10.1093/pan/mpn018>
 }
 \usage{
-bind_log_odds(tbl, feature, set, n)
+bind_log_odds(tbl, set, feature, n)
 }
 \arguments{
 \item{tbl}{A tidy dataset with one row per feature and set}
 
-\item{feature}{Column of features for identifying differences, such as words or
-bigrams with text data}
-
 \item{set}{Column of sets between which to compare features, such as
 documents for text data}
+
+\item{feature}{Column of features for identifying differences, such as words or
+bigrams with text data}
 
 \item{n}{Column containing feature-set counts}
 }
@@ -27,12 +27,12 @@ is added as a column. This functions supports non-standard evaluation through
 the tidyeval framework.
 }
 \details{
-The arguments \code{feature}, \code{set}, and \code{n}
+The arguments \code{set}, \code{feature}, and \code{n}
 are passed by expression and support \link[rlang]{quasiquotation};
 you can unquote strings and symbols. Grouping is preserved but ignored.
 
 
-The dataset must have exactly one row per document-term combination for
+The dataset must have exactly one row per set-feature combination for
 this calculation to succeed. Read Monroe, Colaresi, and Quinn (2017) for
 more on the weighted log odds ratio.
 }
@@ -47,6 +47,6 @@ gear_counts
 
 # find the number of gears most characteristic of each engine shape `vs`
 gear_counts \%>\%
-  bind_log_odds(gear, vs, n)
+  bind_log_odds(vs, gear, n)
 
 }

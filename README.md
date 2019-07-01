@@ -77,7 +77,7 @@ Now let's use the `bind_log_odds()` function from the tidylo package to find the
 library(tidylo)
 
 bigram_log_odds <- bigram_counts %>%
-  bind_log_odds(bigram, book, n) 
+  bind_log_odds(book, bigram, n) 
 
 bigram_log_odds %>%
   arrange(-log_odds)

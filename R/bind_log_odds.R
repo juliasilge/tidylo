@@ -6,18 +6,18 @@
 #' the tidyeval framework.
 #'
 #' @param tbl A tidy dataset with one row per feature and set
-#' @param feature Column of features for identifying differences, such as words or
-#' bigrams with text data
 #' @param set Column of sets between which to compare features, such as
 #' documents for text data
+#' @param feature Column of features for identifying differences, such as words or
+#' bigrams with text data
 #' @param n Column containing feature-set counts
 #'
-#' @details The arguments \code{feature}, \code{set}, and \code{n}
+#' @details The arguments \code{set}, \code{feature}, and \code{n}
 #' are passed by expression and support \link[rlang]{quasiquotation};
 #' you can unquote strings and symbols. Grouping is preserved but ignored.
 #'
 #'
-#' The dataset must have exactly one row per document-term combination for
+#' The dataset must have exactly one row per set-feature combination for
 #' this calculation to succeed. Read Monroe, Colaresi, and Quinn (2017) for
 #' more on the weighted log odds ratio.
 #'
@@ -34,15 +34,15 @@
 #'
 #' # find the number of gears most characteristic of each engine shape `vs`
 #' gear_counts %>%
-#'   bind_log_odds(gear, vs, n)
+#'   bind_log_odds(vs, gear, n)
 #'
 #' @importFrom rlang enquo as_name is_empty sym
 #' @importFrom dplyr count left_join mutate rename group_by ungroup group_vars
 #' @export
 
-bind_log_odds <- function(tbl, feature, set, n) {
-    feature <- enquo(feature)
+bind_log_odds <- function(tbl, set, feature, n) {
     set <- enquo(set)
+    feature <- enquo(feature)
     n_col <- enquo(n)
 
     ## groups are preserved but ignored
