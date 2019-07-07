@@ -57,13 +57,13 @@ Now let's use the `bind_log_odds()` function from the tidylo package to find the
 library(tidylo)
 
 bigram_log_odds <- bigram_counts %>%
-  bind_log_odds(bigram, book, n) 
+  bind_log_odds(book, bigram, n) 
 
 bigram_log_odds %>%
   arrange(-log_odds)
 ```
 
-The highest log odds bigrams (bigrams more likely to come from each book, compared to the others) involve concepts specific to each novel, such the pump room in *Northanger Abbey* and sister/mother figures in *Sense & Sensibility*. We can make a visualization as well.
+The highest log odds bigrams (bigrams more likely to come from each book, compared to the others) involve concepts specific to each novel, such as the pump room in *Northanger Abbey* and sister/mother figures in *Sense & Sensibility*. We can make a visualization as well.
 
 ```{r bigram_plot, dependson="bigram_log_odds", fig.width=10, fig.height=7}
 library(ggplot2)
@@ -103,7 +103,7 @@ Now we can use `bind_log_odds()` to find the weighted log odds ratio for each nu
 
 ```{r dependson="gear_counts"}
 gear_counts %>%
-  bind_log_odds(gear, vs, n)
+  bind_log_odds(vs, gear, n)
 ```
 
 For engine shape `vs = 0`, having three gears has the highest log odds while for engine shape `vs = 1`, having four gears has the highest log odds. This dataset is small enough that you can look at the count data and see how this is working. 
