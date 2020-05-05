@@ -1,14 +1,14 @@
 Package: tidylo
 Type: Package
-Title: Tidy Log Odds Ratio Weighted by Uninformative Prior
+Title: Weighted Tidy Log Odds Ratio
 Version: 0.1.0.900
 Authors@R: c(person("Tyler", "Schnoebelen", role = c("aut"),
              email = "tjs1976@gmail.com"),
              person("Julia", "Silge", role = c("aut", "cre"), 
              email = "julia.silge@gmail.com", 
              comment = c(ORCID = "0000-0002-3671-836X")))
-Description: Calculate the log odds ratio, weighted by an uninformative 
-    Dirichlet prior, using tidy data principles.
+Description: Calculate the log odds ratio, weighted by a prior set via empirical  
+    Bayesian estimation, using tidy data principles.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: TRUE
@@ -26,4 +26,5 @@ Suggests:
     testthat (>= 2.1.0),
     covr
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
