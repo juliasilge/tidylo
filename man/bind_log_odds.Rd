@@ -4,33 +4,39 @@
 \alias{bind_log_odds}
 \title{Bind the weighted log odds to a tidy dataset}
 \source{
-<https://doi.org/10.1093/pan/mpn018>
+\url{https://doi.org/10.1093/pan/mpn018}
 }
 \usage{
-bind_log_odds(tbl, set, feature, n)
+bind_log_odds(tbl, set, feature, n, unweighted = FALSE)
 }
 \arguments{
-\item{tbl}{A tidy dataset with one row per feature and set}
+\item{tbl}{A tidy dataset with one row per feature and set.}
 
 \item{set}{Column of sets between which to compare features, such as
-documents for text data}
+documents for text data.}
 
-\item{feature}{Column of features for identifying differences, such as words or
-bigrams with text data}
+\item{feature}{Column of features for identifying differences, such as words
+or bigrams with text data.}
 
-\item{n}{Column containing feature-set counts}
+\item{n}{Column containing feature-set counts.}
+
+\item{unweighted}{Return the unweighted log odds, in addition to the weighted
+log odds computed via empirical Bayesian estimation. Defaults to \code{FALSE}.}
 }
 \description{
-Calculate and bind the log odds ratio, weighted by an uninformative Dirichlet
-prior, of a tidy dataset to the dataset itself. The weighted log odds ratio
-is added as a column. This functions supports non-standard evaluation through
-the tidyeval framework.
+Calculate and bind the log odds ratio, weighted by a prior estimated from
+the data itself via an empirical Bayesian approach, of a tidy dataset to the
+dataset itself. The weighted log odds ratio is added as a column. This
+functions supports non-standard evaluation through the tidyeval framework.
 }
 \details{
 The arguments \code{set}, \code{feature}, and \code{n}
 are passed by expression and support \link[rlang]{quasiquotation};
 you can unquote strings and symbols. Grouping is preserved but ignored.
 
+The weighted log odds computed by this function are also z-scores for the
+log odds; this quantity is useful for comparing frequencies across sets but
+its relationship to an odds ratio is not straightforward after the weighting.
 
 The dataset must have exactly one row per set-feature combination for
 this calculation to succeed. Read Monroe, Colaresi, and Quinn (2017) for
