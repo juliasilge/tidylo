@@ -25,7 +25,8 @@ test_that("Can calculate weighted log odds", {
 
     expect_is(result, "tbl_df")
     expect_is(result$log_odds, "numeric")
-    expect_equal(sum(result$log_odds[c(2, 4:6, 8, 10)] > 0), 6)
+    expect_is(result$log_odds_weighted, "numeric")
+    expect_equal(sum(result$log_odds_weighted[c(2, 4:6, 8, 10)] > 0), 6)
 
     # preserves but ignores groups
     result2 <- w %>%
@@ -46,8 +47,8 @@ test_that("Weighted log odds works when the feature is a number", {
 
     result <- bind_log_odds(z, id, word, n)
     expect_false(any(is.na(result)))
-    expect_equal(sum(result$log_odds[1:5] > 0), 5)
-    expect_lt(result$log_odds[6], 0)
+    expect_equal(sum(result$log_odds_weighted[1:5] > 0), 5)
+    expect_lt(result$log_odds_weighted[6], 0)
 })
 
 
@@ -90,8 +91,8 @@ test_that("Weighted log odds with tidyeval works", {
     )
 
     expect_is(result, "tbl_df")
-    expect_is(result$log_odds, "numeric")
-    expect_equal(sum(result$log_odds[c(2, 4:6, 8, 10)] > 0), 6)
+    expect_is(result$log_odds_weighted, "numeric")
+    expect_equal(sum(result$log_odds_weighted[c(2, 4:6, 8, 10)] > 0), 6)
 
     result3 <- w %>%
         group_by(document) %>%
