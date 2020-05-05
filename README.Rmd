@@ -12,7 +12,7 @@ suppressPackageStartupMessages(library(ggplot2))
 theme_set(theme_light())
 ```
 
-# tidylo: Tidy Log Odds Ratio Weighted by Uninformative Prior
+# tidylo: Weighted Tidy Log Odds Ratio
 
 **Authors:** [Julia Silge](https://juliasilge.com/), [Tyler Schnoebelen](https://www.letslanguage.org/)<br/>
 **License:** [MIT](https://opensource.org/licenses/MIT)
@@ -22,11 +22,12 @@ theme_set(theme_light())
 [![Travis build status](https://travis-ci.org/juliasilge/tidylo.svg?branch=master)](https://travis-ci.org/juliasilge/tidylo)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/juliasilge/tidylo?branch=master&svg=true)](https://ci.appveyor.com/project/juliasilge/tidylo)
 [![Codecov test coverage](https://codecov.io/gh/juliasilge/tidylo/branch/master/graph/badge.svg)](https://codecov.io/gh/juliasilge/tidylo?branch=master)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
 How can we measure how the usage or frequency of some **feature**, such as words, differs across some group or **set**, such as documents? One option is to use the log odds ratio, but the log odds ratio alone does not account for sampling variability; we haven't counted every feature the same number of times so how do we know which differences are meaningful? 
 
-Enter the **weighted log odds**, which tidylo provides an implementation for, using tidy data principles. In particular, here we use the method outlined in [Monroe, Colaresi, and Quinn (2008)](https://doi.org/10.1093/pan/mpn018) to weight the log odds ratio by an uninformative Dirichlet prior.
+Enter the **weighted log odds**, which tidylo provides an implementation for, using tidy data principles. In particular, here we use the method outlined in [Monroe, Colaresi, and Quinn (2008)](https://doi.org/10.1093/pan/mpn018) to weight the log odds ratio by a prior estimated from the data itself, an empirical Bayesian approach.
 
 ## Installation
 
@@ -62,7 +63,9 @@ bigram_counts <- tidy_bigrams %>%
 bigram_counts
 ```
 
-Now let's use the `bind_log_odds()` function from the tidylo package to find the weighted log odds for each bigram. What are the highest log odds bigrams for these books?
+Now let's use the `bind_log_odds()` function from the tidylo package to find the weighted log odds for each bigram. The weighted log odds computed by this function are also [z-scores](https://en.wikipedia.org/wiki/Standard_score) for the log odds; this quantity is useful for comparing frequencies across categories or sets but its relationship to an odds ratio is not straightforward after the weighting. 
+
+What are the bigrams with the highest weighted log odds for these books?
 
 ```{r}
 library(tidylo)
@@ -71,10 +74,10 @@ bigram_log_odds <- bigram_counts %>%
   bind_log_odds(book, bigram, n) 
 
 bigram_log_odds %>%
-  arrange(-log_odds)
+  arrange(-log_odds_weighted)
 ```
 
-The highest log odds bigrams (bigrams more likely to come from each book, compared to the others) involve proper nouns. We can make a visualization as well.
+The bigrams more likely to come from each book, compared to the others, involve proper nouns. We can make a visualization as well.
 
 ```{r bigram_plot, fig.width=10, fig.height=7}
 library(ggplot2)
@@ -83,8 +86,8 @@ bigram_log_odds %>%
   group_by(book) %>%
   top_n(10) %>%
   ungroup %>%
-  mutate(bigram = reorder(bigram, log_odds)) %>%
-  ggplot(aes(bigram, log_odds, fill = book)) +
+  mutate(bigram = reorder(bigram, log_odds_weighted)) %>%
+  ggplot(aes(bigram, log_odds_weighted, fill = book)) +
   geom_col(show.legend = FALSE) +
   facet_wrap(~book, scales = "free") +
   coord_flip() +
