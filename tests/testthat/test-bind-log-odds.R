@@ -24,7 +24,6 @@ test_that("Can calculate weighted log odds", {
     )
 
     expect_is(result, "tbl_df")
-    expect_is(result$log_odds, "numeric")
     expect_is(result$log_odds_weighted, "numeric")
     expect_equal(sum(result$log_odds_weighted[c(2, 4:6, 8, 10)] > 0), 6)
 
@@ -35,6 +34,21 @@ test_that("Can calculate weighted log odds", {
 
     expect_equal(length(groups(result2)), 1)
     expect_equal(as.character(groups(result2)[[1]]), "document")
+})
+
+test_that("Can get back unweighted log odds", {
+    result <- w %>%
+        bind_log_odds(document, word, frequency, unweighted = TRUE)
+
+    expect_equal(
+        select(w, document, word, frequency),
+        select(result, document, word, frequency)
+    )
+
+    expect_is(result, "tbl_df")
+    expect_is(result$log_odds, "numeric")
+    expect_is(result$log_odds_weighted, "numeric")
+    expect_equal(sum(result$log_odds[c(2, 4:6, 8, 10)] > 0), 6)
 })
 
 
