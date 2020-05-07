@@ -72,7 +72,8 @@ bind_log_odds <- function(tbl, set, feature, n, unweighted = FALSE) {
                             1/(total + freq2 - !!n_col - freq1) +
                             1/(freqnotthem + freq1) +
                             1/(total + freq2notthem - freqnotthem - freq1),
-                        log_odds = log(!!n_col + 1 / freq2 + 1) - log(freqnotthem + 1 / freq2notthem + 1),
+                        log_odds = log((!!n_col + 1) / (freq2 + 1)) -
+                            log((freqnotthem + 1) / (freq2notthem + 1)),
                         log_odds_weighted = (log(l1them) - log(l2notthem)) / sqrt(sigma2))
 
     if (unweighted) {
@@ -82,7 +83,7 @@ bind_log_odds <- function(tbl, set, feature, n, unweighted = FALSE) {
 
     if (!is_empty(grouping))  {
         tbl <- group_by(tbl, !!sym(grouping))
-        }
+    }
 
     tbl
 }
