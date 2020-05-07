@@ -28,6 +28,9 @@
 #'
 #' @source <https://doi.org/10.1093/pan/mpn018>
 #'
+#' @references 1.Monroe, B. L., Colaresi, M. P. & Quinn, K. M. Fightin’ Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict. Polit. anal. 16, 372–403 (2008).
+
+#'
 #' @examples
 #'
 #' library(dplyr)
@@ -54,35 +57,75 @@ bind_log_odds <- function(tbl, set, feature, n, unweighted = FALSE) {
     grouping <- group_vars(tbl)
     tbl <- ungroup(tbl)
 
-    freq1_df <- count(tbl, !!feature, wt = !!n_col)
-    freq1_df <- rename(freq1_df, freq1 = n)
+    # find alpha. for starts, assume alpha = 1
 
-    freq2_df <- count(tbl, !!set, wt = !!n_col)
-    freq2_df <- rename(freq2_df, freq2 = n)
+    pseudo <- tbl
 
-    df_joined <- left_join(tbl, freq1_df, by = as_name(feature))
-    df_joined <- mutate(df_joined, freqnotthem = freq1 - !!n_col)
-    df_joined <- mutate(df_joined, total = sum(!!n_col))
-    df_joined <- left_join(df_joined, freq2_df, by = as_name(set))
-    df_joined <- mutate(df_joined,
-                        freq2notthem = total - freq2,
-                        l1them = (!!n_col + freq1) / (total + freq2 - !!n_col - freq1),
-                        l2notthem = (freqnotthem + freq1) / (total + freq2notthem - freqnotthem - freq1),
-                        sigma2 = 1/(!!n_col + freq1) +
-                            1/(total + freq2 - !!n_col - freq1) +
-                            1/(freqnotthem + freq1) +
-                            1/(total + freq2notthem - freqnotthem - freq1),
-                        log_odds = log(!!n_col + 1 / freq2 + 1) - log(freqnotthem + 1 / freq2notthem + 1),
-                        log_odds_weighted = (log(l1them) - log(l2notthem)) / sqrt(sigma2))
+    # allow alpha to vary by group
+    # so alpha is a vector of pseudo counts to add to each
+    # feature (word) count in each each group
 
-    if (unweighted) {
-        tbl$log_odds <- df_joined$log_odds
-    }
-    tbl$log_odds_weighted <- df_joined$log_odds_weighted
+    pseudo$alpha <- 1
+
+    # word w, group i. assume only one topic, so omit k notation
+    # !!n_col ~ y_wi
+    pseudo <- mutate(pseudo, y_wi = !!n_col + alpha)
+
+    # y_w ~ word count for word w across all groups
+    # y_wi ~ word count for word w within group i
+    feat_counts <- count(pseudo, !!feature, wt = y_wi)
+    feat_counts <- rename(feat_counts, y_w = n)
+
+    set_counts <- count(pseudo, !!set, wt = y_wi)
+    set_counts <- rename(set_counts, n_i = n)
+
+    pseudo_counts <- left_join(pseudo, feat_counts, by = as_name(feature))
+    pseudo_counts <- left_join(pseudo_counts, set_counts, by = as_name(set))
+
+    pseudo_counts
+
+    # in `counts` the mapping to Monroe et al (2008) is as follows:
+    #
+    #   set ~ topic
+    #   feature ~ word
+    #
+    #   n ~ y_{kw}^(i) -- count for word w in topic k for group i
+    #   ??? ~ n_k -- total word count in topic k for all groups
+    #   set_count ~ n_k^(i) -- total word count in topic k for group i
+    #   set_count_other ~ n_k^(i) -- total word count in topic k for
+    #                                  groups except i
+    #   feat_count_other ~ n_k - y_{kw} -- total word count in topic k for
+    #                                        groups except i
+
+    # monroe paper notation: superscript is "group", w is word, k is topic
+
+    # we have already inflated each word count by alpha, so you can ignore
+    # the alpha terms in Monroe et al. i.e. the y_wi in `pseudo` is really
+    # y_wi + alpha_wi in Monroe, but this is easier to follow
+
+    results <- mutate(
+        pseudo_counts,
+        omega_wi = y_wi / (n_i - y_wi),
+        omega_w = y_w / (sum(y_wi) - y_w),
+        delta_wi = log(omega_wi) - log(omega_w),   # eqn 15,
+        sigma2_wi = 1 / y_wi + 1 / y_w,            # eqn 18
+        zeta_wi = delta_wi / sqrt(sigma2_wi)       # eqn 21
+    )
+
+    clean <- rename(
+        results,
+        log_odds = delta_wi,
+        scaled_log_odds = zeta_wi
+    )
+
+    tbl <- select(
+        clean,
+        -y_wi, -y_w, -n_i, -omega_wi, -omega_w, -sigma2_wi
+    )
 
     if (!is_empty(grouping))  {
         tbl <- group_by(tbl, !!sym(grouping))
-        }
+    }
 
     tbl
 }
