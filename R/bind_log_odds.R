@@ -1,33 +1,60 @@
 #' Bind the weighted log odds to a tidy dataset
 #'
-#' Calculate and bind the log odds ratio, weighted by a prior estimated from
-#' the data itself via an empirical Bayesian approach, of a tidy dataset to the
-#' dataset itself. The weighted log odds ratio is added as a column. This
-#' functions supports non-standard evaluation through the tidyeval framework.
+#' Calculate and bind posterior log odds ratios, assuming a
+#' Multinomial model with a Dirichlet prior. The Dirichlet prior
+#' parameters are set using an empirical bayes approach by default,
+#' but an uninformative prior is also available. Assumes that data
+#' is in a tidy format, and adds the weighted log odds ratio
+#' as a column. Supports non-standard evaluation through the
+#' tidyeval framework.
 #'
-#' @param tbl A tidy dataset with one row per feature and set.
+#' @param tbl A tidy dataset with one row per `feature` and `set`.
+#'
 #' @param set Column of sets between which to compare features, such as
-#' documents for text data.
-#' @param feature Column of features for identifying differences, such as words
-#' or bigrams with text data.
-#' @param n Column containing feature-set counts.
-#' @param unweighted Return the unweighted log odds, in addition to the weighted
-#' log odds computed via empirical Bayesian estimation. Defaults to `FALSE`.
+#'   documents for text data.
 #'
-#' @details The arguments \code{set}, \code{feature}, and \code{n}
-#' are passed by expression and support \link[rlang]{quasiquotation};
+#' @param feature Column of features for identifying differences, such as words
+#'   or bigrams with text data.
+#'
+#' @param n Column containing feature-set counts.
+#'
+#' @param uninformative Whether or not to use an uninformative Dirichlet
+#'   prior. Defaults to `FALSE`.
+#'
+#' @param unweighted Whether or not to return the unweighted log odds,
+#'   in addition to the weighted log odds. Defaults to `FALSE`.
+#'
+#' @return The original tidy dataset with up to two additional columns.
+#'
+#'   - `weighted_log_odds`: The weight posterior log-odds ratio, where
+#'     the odds ratio is for the feature distribution within that set versus
+#'     all other sets. The weighting comes from variance-stabilization
+#'     of the posterior.
+#'
+#'   - `log_odds` (optional, only returned if requested): The posterior
+#'     log odds without variance stabilization.
+#'
+#' @details The arguments `set`, `feature`, and `n`
+#' are passed by expression and support [rlang::quasiquotation];
 #' you can unquote strings and symbols. Grouping is preserved but ignored.
+#'
+#' The default empirical bayes prior inflates feature counts in each group
+#' by total feature counts across all groups. This is like using a moment
+#' based estimator for the parameters of the Dirichlet prior. Note that
+#' empirical bayes estimates perform well on average, but can have
+#' some surprising properties. If you are uncomfortable with
+#' empirical bayes estimates, we suggest using the uninformative prior.
 #'
 #' The weighted log odds computed by this function are also z-scores for the
 #' log odds; this quantity is useful for comparing frequencies across sets but
 #' its relationship to an odds ratio is not straightforward after the weighting.
 #'
 #' The dataset must have exactly one row per set-feature combination for
-#' this calculation to succeed. Read Monroe, Colaresi, and Quinn (2017) for
+#' this calculation to succeed. Read Monroe et al (2008) for
 #' more on the weighted log odds ratio.
 #'
 #' @references
-#'  1. Monroe, B. L., Colaresi, M. P. & Quinn, K. M. Fightin’ Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict. Polit. anal. 16, 372–403 (2008). <https://doi.org/10.1093/pan/mpn018>
+#'  1. Monroe, B. L., Colaresi, M. P. & Quinn, K. M. Fightin' Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict. Polit. anal. 16, 372-403 (2008). <https://doi.org/10.1093/pan/mpn018>
 #'
 #'  2. Minka, T. P. Estimating a Dirichlet distribution. (2012). <https://tminka.github.io/papers/dirichlet/minka-dirichlet.pdf>
 #'
@@ -45,11 +72,10 @@
 #' regularized <- gear_counts %>%
 #'   bind_log_odds(vs, gear, n)
 #'
-#' # lo
 #' regularized
 #'
 #' unregularized <- gear_counts %>%
-#'   bind_log_odds(vs, gear, n, uninformative = TRUE)
+#'   bind_log_odds(vs, gear, n, uninformative = TRUE, unweighted = TRUE)
 #'
 #' # these logs odd will be farther from zero
 #' # than the regularized estimates!
@@ -59,7 +85,8 @@
 #' @importFrom dplyr count left_join mutate rename group_by ungroup group_vars
 #' @export
 
-bind_log_odds <- function(tbl, set, feature, n, uninformative = FALSE) {
+bind_log_odds <- function(tbl, set, feature, n, uninformative = FALSE,
+                          unweighted = FALSE) {
     set <- enquo(set)
     feature <- enquo(feature)
     n_col <- enquo(n)
@@ -143,7 +170,7 @@ bind_log_odds <- function(tbl, set, feature, n, uninformative = FALSE) {
 
     clean <- rename(
         results,
-        scaled_log_odds = zeta_wi,
+        log_odds_weighted = zeta_wi,
         log_odds = delta_wi,
     )
 
@@ -151,6 +178,10 @@ bind_log_odds <- function(tbl, set, feature, n, uninformative = FALSE) {
         clean,
         -y_wi, -y_w, -n_i, -omega_wi, -omega_w, -sigma2_wi
     )
+
+    if (!unweighted) {
+        tbl$log_odds <- NULL
+    }
 
     if (!is_empty(grouping))  {
         tbl <- group_by(tbl, !!sym(grouping))

@@ -3,14 +3,11 @@
 \name{bind_log_odds}
 \alias{bind_log_odds}
 \title{Bind the weighted log odds to a tidy dataset}
-\source{
-\url{https://doi.org/10.1093/pan/mpn018}
-}
 \usage{
-bind_log_odds(tbl, set, feature, n, unweighted = FALSE)
+bind_log_odds(tbl, set, feature, n, uninformative = FALSE, unweighted = FALSE)
 }
 \arguments{
-\item{tbl}{A tidy dataset with one row per feature and set.}
+\item{tbl}{A tidy dataset with one row per \code{feature} and \code{set}.}
 
 \item{set}{Column of sets between which to compare features, such as
 documents for text data.}
@@ -20,26 +17,50 @@ or bigrams with text data.}
 
 \item{n}{Column containing feature-set counts.}
 
-\item{unweighted}{Return the unweighted log odds, in addition to the weighted
-log odds computed via empirical Bayesian estimation. Defaults to \code{FALSE}.}
+\item{uninformative}{Whether or not to use an uninformative Dirichlet
+prior. Defaults to \code{FALSE}.}
+
+\item{unweighted}{Whether or not to return the unweighted log odds,
+in addition to the weighted log odds. Defaults to \code{FALSE}.}
+}
+\value{
+The original tidy dataset with up to two additional columns.
+\itemize{
+\item \code{weighted_log_odds}: The weight posterior log-odds ratio, where
+the odds ratio is for the feature distribution within that set versus
+all other sets. The weighting comes from variance-stabilization
+of the posterior.
+\item \code{log_odds} (optional, only returned if requested): The posterior
+log odds without variance stabilization.
+}
 }
 \description{
-Calculate and bind the log odds ratio, weighted by a prior estimated from
-the data itself via an empirical Bayesian approach, of a tidy dataset to the
-dataset itself. The weighted log odds ratio is added as a column. This
-functions supports non-standard evaluation through the tidyeval framework.
+Calculate and bind posterior log odds ratios, assuming a
+Multinomial model with a Dirichlet prior. The Dirichlet prior
+parameters are set using an empirical bayes approach by default,
+but an uninformative prior is also available. Assumes that data
+is in a tidy format, and adds the weighted log odds ratio
+as a column. Supports non-standard evaluation through the
+tidyeval framework.
 }
 \details{
 The arguments \code{set}, \code{feature}, and \code{n}
-are passed by expression and support \link[rlang]{quasiquotation};
+are passed by expression and support \link[rlang:quasiquotation]{rlang::quasiquotation};
 you can unquote strings and symbols. Grouping is preserved but ignored.
+
+The default empirical bayes prior inflates feature counts in each group
+by total feature counts across all groups. This is like using a moment
+based estimator for the parameters of the Dirichlet prior. Note that
+empirical bayes estimates perform well on average, but can have
+some surprising properties. If you are uncomfortable with
+empirical bayes estimates, we suggest using the uninformative prior.
 
 The weighted log odds computed by this function are also z-scores for the
 log odds; this quantity is useful for comparing frequencies across sets but
 its relationship to an odds ratio is not straightforward after the weighting.
 
 The dataset must have exactly one row per set-feature combination for
-this calculation to succeed. Read Monroe, Colaresi, and Quinn (2017) for
+this calculation to succeed. Read Monroe et al (2008) for
 more on the weighted log odds ratio.
 }
 \examples{
@@ -52,7 +73,24 @@ gear_counts <- mtcars \%>\%
 gear_counts
 
 # find the number of gears most characteristic of each engine shape `vs`
-gear_counts \%>\%
+
+regularized <- gear_counts \%>\%
   bind_log_odds(vs, gear, n)
 
+# lo
+regularized
+
+unregularized <- gear_counts \%>\%
+  bind_log_odds(vs, gear, n, uninformative = TRUE)
+
+# these logs odd will be farther from zero
+# than the regularized estimates!
+unregularized
+
+}
+\references{
+\enumerate{
+\item Monroe, B. L., Colaresi, M. P. & Quinn, K. M. Fightin' Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict. Polit. anal. 16, 372-403 (2008). \url{https://doi.org/10.1093/pan/mpn018}
+\item Minka, T. P. Estimating a Dirichlet distribution. (2012). \url{https://tminka.github.io/papers/dirichlet/minka-dirichlet.pdf}
+}
 }
