@@ -55,22 +55,6 @@
 #' # than the regularized estimates!
 #' unregularized
 #'
-#' # compare regularized and unregularized estimates
-#'
-#' labelled_regularized <- regularized %>%
-#'   mutate(estimates = "regularized")
-#'
-#' labelled_unregularized <- unregularized %>%
-#'   mutate(estimates = "unregularized")
-#'
-#' library(ggplot2)
-#'
-#' labelled_regularized %>%
-#'   bind_rows(labelled_unregularized) %>%
-#'   ggplot(aes(gear, scaled_log_odds)) +
-#'   geom_point() +
-#'   facet_wrap(~estimates)
-#'
 #' @importFrom rlang enquo as_name is_empty sym
 #' @importFrom dplyr count left_join mutate rename group_by ungroup group_vars
 #' @export
