@@ -28,8 +28,10 @@
 #'
 #' @source <https://doi.org/10.1093/pan/mpn018>
 #'
-#' @references 1.Monroe, B. L., Colaresi, M. P. & Quinn, K. M. Fightin’ Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict. Polit. anal. 16, 372–403 (2008).
-
+#' @references
+#'  1. Monroe, B. L., Colaresi, M. P. & Quinn, K. M. Fightin’ Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict. Polit. anal. 16, 372–403 (2008). <https://doi.org/10.1093/pan/mpn018>
+#'
+#'  2. Minka, T. P. Estimating a Dirichlet distribution. (2012). <https://tminka.github.io/papers/dirichlet/minka-dirichlet.pdf>
 #'
 #' @examples
 #'
@@ -41,14 +43,41 @@
 #' gear_counts
 #'
 #' # find the number of gears most characteristic of each engine shape `vs`
-#' gear_counts %>%
+#'
+#' regularized <- gear_counts %>%
 #'   bind_log_odds(vs, gear, n)
+#'
+#' # lo
+#' regularized
+#'
+#' unregularized <- gear_counts %>%
+#'   bind_log_odds(vs, gear, n, uninformative = TRUE)
+#'
+#' # these logs odd will be farther from zero
+#' # than the regularized estimates!
+#' unregularized
+#'
+#' # compare regularized and unregularized estimates
+#'
+#' labelled_regularized <- regularized %>%
+#'   mutate(estimates = "regularized")
+#'
+#' labelled_unregularized <- unregularized %>%
+#'   mutate(estimates = "unregularized")
+#'
+#' library(ggplot2)
+#'
+#' labelled_regularized %>%
+#'   bind_rows(labelled_unregularized) %>%
+#'   ggplot(aes(gear, scaled_log_odds)) +
+#'   geom_point() +
+#'   facet_wrap(~estimates)
 #'
 #' @importFrom rlang enquo as_name is_empty sym
 #' @importFrom dplyr count left_join mutate rename group_by ungroup group_vars
 #' @export
 
-bind_log_odds <- function(tbl, set, feature, n, unweighted = FALSE) {
+bind_log_odds <- function(tbl, set, feature, n, uninformative = FALSE) {
     set <- enquo(set)
     feature <- enquo(feature)
     n_col <- enquo(n)
@@ -57,56 +86,74 @@ bind_log_odds <- function(tbl, set, feature, n, unweighted = FALSE) {
     grouping <- group_vars(tbl)
     tbl <- ungroup(tbl)
 
-    # find alpha. for starts, assume alpha = 1
+    # the approach in the following is to choose a prior
+    # alpha, then update the feature counts based on this prior,
+    # generating psuedo counts. at this point, we do MLE computations
+    # on the pseudo counts rather than working with a posterior
+    # where we separately keep track of alpha
 
     pseudo <- tbl
 
-    # allow alpha to vary by group
-    # so alpha is a vector of pseudo counts to add to each
-    # feature (word) count in each each group
+    if (uninformative) {
+        pseudo$alpha <- 1
+    } else {
 
-    pseudo$alpha <- 1
+        # in this case we use an empirical bayes prior
+        #
+        # the MLE of a Dirichlet-Multinomial doesn't have a closed
+        # form solution. instead we use a method of moments estimator
+        # for the alpha that leverages the first moment of the
+        # Dirichlet-Multinomial distribution
 
-    # word w, group i. assume only one topic, so omit k notation
-    # !!n_col ~ y_wi
+        # see https://tminka.github.io/papers/dirichlet/minka-dirichlet.pdf
+        # for details on dirichlet-multinomial estimation
+
+        # in practice, our pseudo-counts alpha will be the overall
+        # word counts for each word
+
+        # `.n` is the *actual count* of each word w across
+        # all groups
+        feat_counts <- count(pseudo, !!feature, wt = !!n_col)
+        feat_counts <- rename(feat_counts, .n = n)
+        feat_counts <- left_join(tbl, feat_counts, by = as_name(feature))
+
+        pseudo$alpha <- feat_counts$.n
+    }
+
+    # note that Monroe et al (2018) considers multiple topics,
+    # where the topic is denoted by a subscript k. in our case
+    # we only ever have a single topic, and we omit the k notation
+    #
+    # the w subscript matches Monroe, the i subscript is a superscript
+    # in Monroe
+    #
+    # note that we use feature ~ word, and set ~ group
+
+    # y_wi is the pseudo count of word w in group i
     pseudo <- mutate(pseudo, y_wi = !!n_col + alpha)
 
-    # y_w ~ word count for word w across all groups
-    # y_wi ~ word count for word w within group i
+    # y_w is the total count of word w
     feat_counts <- count(pseudo, !!feature, wt = y_wi)
     feat_counts <- rename(feat_counts, y_w = n)
 
+    # n_i is the count of all words in group i
     set_counts <- count(pseudo, !!set, wt = y_wi)
     set_counts <- rename(set_counts, n_i = n)
 
+    # merge the various counts together so we can
+    # do vectorized operations in a data frame
     pseudo_counts <- left_join(pseudo, feat_counts, by = as_name(feature))
     pseudo_counts <- left_join(pseudo_counts, set_counts, by = as_name(set))
 
-    pseudo_counts
-
-    # in `counts` the mapping to Monroe et al (2008) is as follows:
-    #
-    #   set ~ topic
-    #   feature ~ word
-    #
-    #   n ~ y_{kw}^(i) -- count for word w in topic k for group i
-    #   ??? ~ n_k -- total word count in topic k for all groups
-    #   set_count ~ n_k^(i) -- total word count in topic k for group i
-    #   set_count_other ~ n_k^(i) -- total word count in topic k for
-    #                                  groups except i
-    #   feat_count_other ~ n_k - y_{kw} -- total word count in topic k for
-    #                                        groups except i
-
-    # monroe paper notation: superscript is "group", w is word, k is topic
-
-    # we have already inflated each word count by alpha, so you can ignore
-    # the alpha terms in Monroe et al. i.e. the y_wi in `pseudo` is really
-    # y_wi + alpha_wi in Monroe, but this is easier to follow
+    # alphas omitted in the following since we working directly
+    # with pseudocounts, rather than adding in the alphas at this
+    # point. here we have no subscript k because we consider a single
+    # topic
 
     results <- mutate(
         pseudo_counts,
-        omega_wi = y_wi / (n_i - y_wi),
-        omega_w = y_w / (sum(y_wi) - y_w),
+        omega_wi = y_wi / (n_i - y_wi),            # odds in group i
+        omega_w = y_w / (sum(y_wi) - y_w),         # overall odds
         delta_wi = log(omega_wi) - log(omega_w),   # eqn 15,
         sigma2_wi = 1 / y_wi + 1 / y_w,            # eqn 18
         zeta_wi = delta_wi / sqrt(sigma2_wi)       # eqn 21
@@ -114,8 +161,8 @@ bind_log_odds <- function(tbl, set, feature, n, unweighted = FALSE) {
 
     clean <- rename(
         results,
+        scaled_log_odds = zeta_wi,
         log_odds = delta_wi,
-        scaled_log_odds = zeta_wi
     )
 
     tbl <- select(
