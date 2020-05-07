@@ -14,7 +14,7 @@ Authors@R:
              comment = c(ORCID = "0000-0002-3671-836X")),
       person(given = "Alex",
              family = "Hayes",
-             role = "aut",,
+             role = "aut",
              email = "alexpghayes@gmail.com",
              comment = c(ORCID = "0000-0002-4985-5160")))
 Description: Calculate the log odds ratio, weighted by a prior
