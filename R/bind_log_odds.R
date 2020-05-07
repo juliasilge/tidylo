@@ -66,14 +66,18 @@ bind_log_odds <- function(tbl, set, feature, n, unweighted = FALSE) {
     df_joined <- left_join(df_joined, freq2_df, by = as_name(set))
     df_joined <- mutate(df_joined,
                         freq2notthem = total - freq2,
+                        ## l1them is first term in eq 16 from paper
                         l1them = (!!n_col + freq1) / (total + freq2 - !!n_col - freq1),
+                        ## l2notthem is second term in eq 16 from paper
                         l2notthem = (freqnotthem + freq1) / (total + freq2notthem - freqnotthem - freq1),
+                        ## sigma2 is eq 19
                         sigma2 = 1/(!!n_col + freq1) +
                             1/(total + freq2 - !!n_col - freq1) +
                             1/(freqnotthem + freq1) +
                             1/(total + freq2notthem - freqnotthem - freq1),
                         log_odds = log((!!n_col + 1) / (freq2 + 1)) -
                             log((freqnotthem + 1) / (freq2notthem + 1)),
+                        ## log_odds_weighted is eq 22
                         log_odds_weighted = (log(l1them) - log(l2notthem)) / sqrt(sigma2))
 
     if (unweighted) {
