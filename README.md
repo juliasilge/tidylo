@@ -1,3 +1,6 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -5,7 +8,7 @@
 
 # tidylo: Weighted Tidy Log Odds Ratio
 
-**Authors:** [Julia Silge](https://juliasilge.com/), [Tyler Schnoebelen](https://www.letslanguage.org/)<br/>
+**Authors:** [Julia Silge](https://juliasilge.com/), [Alex Hayes](https://www.alexpghayes.com/), [Tyler Schnoebelen](https://www.letslanguage.org/)<br/>
 **License:** [MIT](https://opensource.org/licenses/MIT)
 
 
@@ -18,7 +21,7 @@
 
 How can we measure how the usage or frequency of some **feature**, such as words, differs across some group or **set**, such as documents? One option is to use the log odds ratio, but the log odds ratio alone does not account for sampling variability; we haven't counted every feature the same number of times so how do we know which differences are meaningful? 
 
-Enter the **weighted log odds**, which tidylo provides an implementation for, using tidy data principles. In particular, here we use the method outlined in [Monroe, Colaresi, and Quinn (2008)](https://doi.org/10.1093/pan/mpn018) to weight the log odds ratio by a prior estimated from the data itself, an empirical Bayesian approach.
+Enter the **weighted log odds**, which tidylo provides an implementation for, using tidy data principles. In particular, here we use the method outlined in [Monroe, Colaresi, and Quinn (2008)](https://doi.org/10.1093/pan/mpn018) to weight the log odds ratio by a prior. By default, the prior is estimated from the data itself, an empirical Bayes approach, but an uninformative prior is also available.
 
 ## Installation
 
@@ -49,7 +52,7 @@ library(janeaustenr)
 library(tidytext)
 
 tidy_bigrams <- austen_books() %>%
-     unnest_tokens(bigram, text, token="ngrams", n = 2)
+     unnest_tokens(bigram, text, token = "ngrams", n = 2)
 
 bigram_counts <- tidy_bigrams %>%
      count(book, bigram, sort = TRUE)
@@ -84,19 +87,19 @@ bigram_log_odds <- bigram_counts %>%
 
 bigram_log_odds %>%
   arrange(-log_odds_weighted)
-#> # A tibble: 328,495 x 4
-#>    book                bigram                n log_odds_weighted
-#>    <fct>               <chr>             <int>             <dbl>
-#>  1 Mansfield Park      sir thomas          287              14.8
-#>  2 Pride & Prejudice   mr darcy            243              14.5
-#>  3 Emma                mr knightley        269              14.3
-#>  4 Sense & Sensibility mrs jennings        199              13.2
-#>  5 Emma                mrs weston          229              13.2
-#>  6 Persuasion          captain wentworth   170              13.0
-#>  7 Mansfield Park      miss crawford       215              12.8
-#>  8 Persuasion          mr elliot           147              12.1
-#>  9 Emma                mr elton            190              12.0
-#> 10 Mansfield Park      mr crawford         162              11.1
+#> # A tibble: 328,495 x 5
+#>    book                bigram                n alpha log_odds_weighted
+#>    <fct>               <chr>             <int> <int>             <dbl>
+#>  1 Mansfield Park      sir thomas          287   287              28.3
+#>  2 Pride & Prejudice   mr darcy            243   243              27.7
+#>  3 Emma                mr knightley        269   269              27.5
+#>  4 Emma                mrs weston          229   229              25.4
+#>  5 Sense & Sensibility mrs jennings        199   199              25.2
+#>  6 Persuasion          captain wentworth   170   170              25.1
+#>  7 Mansfield Park      miss crawford       215   215              24.5
+#>  8 Persuasion          mr elliot           147   147              23.3
+#>  9 Emma                mr elton            190   190              23.1
+#> 10 Emma                miss woodhouse      162   162              21.3
 #> # … with 328,485 more rows
 ```
 

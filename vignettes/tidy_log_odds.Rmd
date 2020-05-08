@@ -23,9 +23,9 @@ theme_set(theme_light())
 
 There are multiple ways to measure which words (or bigrams, or other units of text) are important in a text. You can count words, or [measure tf-idf](https://www.tidytextmining.com/tfidf.html). This package implements a different approach for measuring which words are important to a text, a **weighted log odds**.
 
-A log odds ratio is a way of expressing probabilities, and we can weight a log odds ratio so that our implementation does a better job dealing with different combinations of words and documents having different counts. In particular, we use the method outlined in [Monroe, Colaresi, and Quinn (2008)](https://doi.org/10.1093/pan/mpn018) to weight the log odds ratio by a prior estimated from the data itself, an empirical Bayesian approach.
+A log odds ratio is a way of expressing probabilities, and we can weight a log odds ratio so that our implementation does a better job dealing with different combinations of words and documents having different counts. In particular, we use the method outlined in [Monroe, Colaresi, and Quinn (2008)](https://doi.org/10.1093/pan/mpn018) for posterior log odds ratios, assuming a multinomial model with a Dirichlet prior. The default prior is **estimated from the data itself**, an empirical Bayesian approach, but an uninformative prior is also available.
 
-What does this mean? It means that by weighting in this way, we take into account the sampling error in our measurements and acknowledge that we are more certain when we've counted something a lot of times and less certain when we've counted something only a few times. When weighting by a prior in this way, we focus on differences that are more likely to be real, given the evidence that we have.
+What does this mean? It means that by weighting using empirical Bayes estimation, we take into account the sampling error in our measurements and acknowledge that we are more certain when we've counted something a lot of times and less certain when we've counted something only a few times. When weighting by a prior in this way, we focus on differences that are more likely to be real, given the evidence that we have.
 
 Let's look at just such an example.
 
@@ -86,7 +86,7 @@ These bigrams have the highest weighted log odds for each book.
 
 The proper names of characters tend to be unique from book to book unless you're looking at a series like *Harry Potter*. When it comes identifying words or phrases that are unique to a text, a measure like tf-idf does a good job. But because of the way tf-idf is calculated, it cannot distinguish between words that are used in **all** texts. 
 
-For example, the phrase "had been" is used over 100 times in all six Austen novels. The "idf" in tf-idf stands for "inverse document frequency". When a word is in all the texts, tf-idf is zero for all of them. In weighted log odds, however, each book has a different value; in this case the weighted log odds ranges from `r bigram_log_odds %>% filter(bigram == "had been", book == "Persuasion") %>% pull(log_odds) %>% round(2)` in *Persuasion* (very high) down to `r bigram_log_odds %>% filter(bigram == "had been", book == "Sense & Sensibility") %>% pull(log_odds) %>% round(2)` in *Sense & Sensibility* (which suggests something about the style or content is suppressing the phrase). 
+For example, the phrase "had been" is used over 100 times in all six Austen novels. The "idf" in tf-idf stands for "inverse document frequency". When a word is in all the texts, tf-idf is zero for all of them. In weighted log odds, however, each book has a different value; in this case the weighted log odds ranges from `r bigram_log_odds %>% filter(bigram == "had been", book == "Persuasion") %>% pull(log_odds_weighted) %>% round(2)` in *Persuasion* (very high) down to `r bigram_log_odds %>% filter(bigram == "had been", book == "Sense & Sensibility") %>% pull(log_odds_weighted) %>% round(2)` in *Sense & Sensibility* (which suggests something about the style or content is suppressing the phrase). 
 
 ## Counting things other than words
 
@@ -109,5 +109,4 @@ gear_counts %>%
 ```
 
 For engine shape `vs = 0`, having three gears has the highest weighted log odds while for engine shape `vs = 1`, having four gears has the highest weighted log odds. This dataset is small enough that you can look at the count data and see how this is working. 
-
 More importantly, you can notice that this approach is useful both in the initial motivating example of text data but also more generally whenever you have counts in some kind of groups or sets and you want to find what feature is more likely to come from a group, compared to the other groups.
