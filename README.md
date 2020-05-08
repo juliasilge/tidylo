@@ -1,6 +1,3 @@
----
-output: github_document
----
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -119,6 +116,7 @@ bigram_log_odds %>%
   facet_wrap(~book, scales = "free") +
   coord_flip() +
   labs(x = NULL)
+#> Selecting by log_odds_weighted
 ```
 
 <img src="man/figures/README-bigram_plot-1.png" title="plot of chunk bigram_plot" alt="plot of chunk bigram_plot" width="100%" />
