@@ -122,8 +122,7 @@ bind_log_odds <- function(tbl, set, feature, n, uninformative = FALSE,
 
         # `.n` is the *actual count* of each word w across
         # all groups
-        feat_counts <- count(pseudo, !!feature, wt = !!n_col)
-        feat_counts <- rename(feat_counts, .n = n)
+        feat_counts <- count(pseudo, !!feature, wt = !!n_col, name = ".n")
         feat_counts <- left_join(tbl, feat_counts, by = as_name(feature))
 
         pseudo$alpha <- feat_counts$.n
@@ -142,12 +141,10 @@ bind_log_odds <- function(tbl, set, feature, n, uninformative = FALSE,
     pseudo <- mutate(pseudo, y_wi = !!n_col + alpha)
 
     # y_w is the total count of word w
-    feat_counts <- count(pseudo, !!feature, wt = y_wi)
-    feat_counts <- rename(feat_counts, y_w = n)
+    feat_counts <- count(pseudo, !!feature, wt = y_wi, name = "y_w")
 
     # n_i is the count of all words in group i
-    set_counts <- count(pseudo, !!set, wt = y_wi)
-    set_counts <- rename(set_counts, n_i = n)
+    set_counts <- count(pseudo, !!set, wt = y_wi, name = "n_i")
 
     # merge the various counts together so we can
     # do vectorized operations in a data frame
