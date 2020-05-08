@@ -83,7 +83,7 @@ unregularized <- gear_counts \%>\%
   bind_log_odds(vs, gear, n, uninformative = TRUE, unweighted = TRUE)
 
 # these logs odd will be farther from zero
-# than the regularized estimates!
+# than the regularized estimates
 unregularized
 
 }

@@ -25,6 +25,7 @@ test_that("Can calculate weighted log odds", {
 
     expect_is(result, "tbl_df")
     expect_is(result$log_odds_weighted, "numeric")
+    expect_equal(ncol(result), 4)
     expect_equal(sum(result$log_odds_weighted[c(2, 4:6, 8, 10)] > 0), 6)
 
     # preserves but ignores groups
@@ -48,6 +49,7 @@ test_that("Can get back unweighted log odds", {
     expect_is(result, "tbl_df")
     expect_is(result$log_odds, "numeric")
     expect_is(result$log_odds_weighted, "numeric")
+    expect_equal(ncol(result), 5)
     expect_equal(sum(result$log_odds[c(2, 4:6, 8, 10)] > 0), 6)
 })
 

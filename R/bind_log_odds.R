@@ -78,7 +78,7 @@
 #'   bind_log_odds(vs, gear, n, uninformative = TRUE, unweighted = TRUE)
 #'
 #' # these logs odd will be farther from zero
-#' # than the regularized estimates!
+#' # than the regularized estimates
 #' unregularized
 #'
 #' @importFrom rlang enquo as_name is_empty sym
@@ -176,7 +176,7 @@ bind_log_odds <- function(tbl, set, feature, n, uninformative = FALSE,
 
     tbl <- select(
         clean,
-        -y_wi, -y_w, -n_i, -omega_wi, -omega_w, -sigma2_wi
+        -y_wi, -y_w, -n_i, -omega_wi, -omega_w, -sigma2_wi, -alpha
     )
 
     if (!unweighted) {
