@@ -10,6 +10,7 @@
 
 
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/tidylo)](https://CRAN.R-project.org/package=tidylo)
 [![Travis build status](https://travis-ci.org/juliasilge/tidylo.svg?branch=master)](https://travis-ci.org/juliasilge/tidylo)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/juliasilge/tidylo?branch=master&svg=true)](https://ci.appveyor.com/project/juliasilge/tidylo)
 [![Codecov test coverage](https://codecov.io/gh/juliasilge/tidylo/branch/master/graph/badge.svg)](https://codecov.io/gh/juliasilge/tidylo?branch=master)
@@ -22,7 +23,7 @@ Enter the **weighted log odds**, which tidylo provides an implementation for, us
 
 ## Installation
 
-~You can install the released version of tidylo from [CRAN](https://CRAN.R-project.org) with:~
+You can install the released version of tidylo from [CRAN](https://CRAN.R-project.org) with:
 
 
 ```r
