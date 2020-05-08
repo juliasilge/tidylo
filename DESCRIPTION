@@ -18,7 +18,7 @@ Authors@R:
              email = "alexpghayes@gmail.com",
              comment = c(ORCID = "0000-0002-4985-5160")))
 Description: Calculate the log odds ratio, weighted by a prior
-    set via empirical Bayesian estimation, using tidy data principles.
+    such as that from empirical Bayes estimation, using tidy data principles.
 License: MIT + file LICENSE
 URL: http://github.com/juliasilge/tidylo
 BugReports: http://github.com/juliasilge/tidylo/issues
