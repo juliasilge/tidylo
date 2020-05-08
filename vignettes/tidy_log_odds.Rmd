@@ -101,12 +101,24 @@ gear_counts <- mtcars %>%
 gear_counts
 ```
 
-Now we can use `bind_log_odds()` to find the weighted log odds for each number of gears and engine shape.
+Now we can use `bind_log_odds()` to find the weighted log odds for each number of gears and engine shape. First, let's use the default empirical Bayes prior. It regularizes the values.
 
 ```{r dependson="gear_counts"}
-gear_counts %>%
+regularized <- gear_counts %>%
   bind_log_odds(vs, gear, n)
+
+regularized
 ```
 
 For engine shape `vs = 0`, having three gears has the highest weighted log odds while for engine shape `vs = 1`, having four gears has the highest weighted log odds. This dataset is small enough that you can look at the count data and see how this is working. 
-More importantly, you can notice that this approach is useful both in the initial motivating example of text data but also more generally whenever you have counts in some kind of groups or sets and you want to find what feature is more likely to come from a group, compared to the other groups.
+
+Now, let's use the uninformative prior, and compare to the unweighted log odds. These log odds will be farther from zero than the regularized estimates.
+
+```{r dependson="gear_counts"}
+unregularized <- gear_counts %>%
+  bind_log_odds(vs, gear, n, uninformative = TRUE, unweighted = TRUE)
+
+unregularized
+```
+
+Most importantly, you can notice that this approach is useful both in the initial motivating example of text data but also more generally whenever you have counts in some kind of groups or sets and you want to find what feature is more likely to come from a group, compared to the other groups.

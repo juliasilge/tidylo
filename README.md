@@ -85,19 +85,19 @@ bigram_log_odds <- bigram_counts %>%
 
 bigram_log_odds %>%
   arrange(-log_odds_weighted)
-#> # A tibble: 328,495 x 5
-#>    book                bigram                n alpha log_odds_weighted
-#>    <fct>               <chr>             <int> <int>             <dbl>
-#>  1 Mansfield Park      sir thomas          287   287              28.3
-#>  2 Pride & Prejudice   mr darcy            243   243              27.7
-#>  3 Emma                mr knightley        269   269              27.5
-#>  4 Emma                mrs weston          229   229              25.4
-#>  5 Sense & Sensibility mrs jennings        199   199              25.2
-#>  6 Persuasion          captain wentworth   170   170              25.1
-#>  7 Mansfield Park      miss crawford       215   215              24.5
-#>  8 Persuasion          mr elliot           147   147              23.3
-#>  9 Emma                mr elton            190   190              23.1
-#> 10 Emma                miss woodhouse      162   162              21.3
+#> # A tibble: 328,495 x 4
+#>    book                bigram                n log_odds_weighted
+#>    <fct>               <chr>             <int>             <dbl>
+#>  1 Mansfield Park      sir thomas          287              28.3
+#>  2 Pride & Prejudice   mr darcy            243              27.7
+#>  3 Emma                mr knightley        269              27.5
+#>  4 Emma                mrs weston          229              25.4
+#>  5 Sense & Sensibility mrs jennings        199              25.2
+#>  6 Persuasion          captain wentworth   170              25.1
+#>  7 Mansfield Park      miss crawford       215              24.5
+#>  8 Persuasion          mr elliot           147              23.3
+#>  9 Emma                mr elton            190              23.1
+#> 10 Emma                miss woodhouse      162              21.3
 #> # … with 328,485 more rows
 ```
 
