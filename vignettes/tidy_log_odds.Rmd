@@ -23,9 +23,9 @@ theme_set(theme_light())
 
 There are multiple ways to measure which words (or bigrams, or other units of text) are important in a text. You can count words, or [measure tf-idf](https://www.tidytextmining.com/tfidf.html). This package implements a different approach for measuring which words are important to a text, a **weighted log odds**.
 
-A log odds ratio is a way of expressing probabilities, and we can weight a log odds ratio so that our implementation does a better job dealing with different combinations of words and documents having different counts. In particular, we use the method outlined in [Monroe, Colaresi, and Quinn (2008)](https://doi.org/10.1093/pan/mpn018) to weight the log odds ratio by a prior estimated from the data itself, an empirical Bayesian approach.
+A log odds ratio is a way of expressing probabilities, and we can weight a log odds ratio so that our implementation does a better job dealing with different combinations of words and documents having different counts. In particular, we use the method outlined in [Monroe, Colaresi, and Quinn (2008)](https://doi.org/10.1093/pan/mpn018) for posterior log odds ratios, assuming a multinomial model with a Dirichlet prior. The default prior is **estimated from the data itself**, an empirical Bayesian approach, but an uninformative prior is also available.
 
-What does this mean? It means that by weighting in this way, we take into account the sampling error in our measurements and acknowledge that we are more certain when we've counted something a lot of times and less certain when we've counted something only a few times. When weighting by a prior in this way, we focus on differences that are more likely to be real, given the evidence that we have.
+What does this mean? It means that by weighting using empirical Bayes estimation, we take into account the sampling error in our measurements and acknowledge that we are more certain when we've counted something a lot of times and less certain when we've counted something only a few times. When weighting by a prior in this way, we focus on differences that are more likely to be real, given the evidence that we have.
 
 Let's look at just such an example.
 
