@@ -82,7 +82,7 @@
 #' unregularized
 #'
 #' @importFrom rlang enquo as_name is_empty sym
-#' @importFrom dplyr count left_join mutate rename group_by ungroup group_vars
+#' @importFrom dplyr count left_join mutate rename select group_by ungroup group_vars
 #' @export
 
 bind_log_odds <- function(tbl, set, feature, n, uninformative = FALSE,
