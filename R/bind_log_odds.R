@@ -1,8 +1,8 @@
 #' Bind the weighted log odds to a tidy dataset
 #'
 #' Calculate and bind posterior log odds ratios, assuming a
-#' Multinomial model with a Dirichlet prior. The Dirichlet prior
-#' parameters are set using an empirical bayes approach by default,
+#' multinomial model with a Dirichlet prior. The Dirichlet prior
+#' parameters are set using an empirical Bayes approach by default,
 #' but an uninformative prior is also available. Assumes that data
 #' is in a tidy format, and adds the weighted log odds ratio
 #' as a column. Supports non-standard evaluation through the
@@ -26,7 +26,7 @@
 #'
 #' @return The original tidy dataset with up to two additional columns.
 #'
-#'   - `weighted_log_odds`: The weight posterior log-odds ratio, where
+#'   - `weighted_log_odds`: The weighted posterior log odds ratio, where
 #'     the odds ratio is for the feature distribution within that set versus
 #'     all other sets. The weighting comes from variance-stabilization
 #'     of the posterior.
@@ -38,12 +38,12 @@
 #' are passed by expression and support [rlang::quasiquotation];
 #' you can unquote strings and symbols. Grouping is preserved but ignored.
 #'
-#' The default empirical bayes prior inflates feature counts in each group
+#' The default empirical Bayes prior inflates feature counts in each group
 #' by total feature counts across all groups. This is like using a moment
 #' based estimator for the parameters of the Dirichlet prior. Note that
-#' empirical bayes estimates perform well on average, but can have
+#' empirical Bayes estimates perform well on average, but can have
 #' some surprising properties. If you are uncomfortable with
-#' empirical bayes estimates, we suggest using the uninformative prior.
+#' empirical Bayes estimates, we suggest using the uninformative prior.
 #'
 #' The weighted log odds computed by this function are also z-scores for the
 #' log odds; this quantity is useful for comparing frequencies across sets but
