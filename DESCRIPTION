@@ -9,7 +9,7 @@ Authors@R:
              email = "tjs1976@gmail.com"),
       person(given = "Julia",
              family = "Silge",
-             role = c("aut", "cre"),
+             role = c("aut", "cre", "cph"),
              email = "julia.silge@gmail.com",
              comment = c(ORCID = "0000-0002-3671-836X")),
       person(given = "Alex",
@@ -22,7 +22,7 @@ Description: How can we measure how the usage or frequency of some feature, such
     to use the log odds ratio, but the log odds ratio alone does not account for 
     sampling variability; we haven't counted every feature the same number of 
     times so how do we know which differences are meaningful? Enter the weighted 
-    log odds, which tidylo provides an implementation for, using tidy data 
+    log odds, which 'tidylo' provides an implementation for, using tidy data 
     principles. In particular, here we use the method outlined in Monroe, 
     Colaresi, and Quinn (2008) <doi:10.1093/pan/mpn018> to weight the log odds 
     ratio by a prior. By default, the prior is estimated from the data itself, 
