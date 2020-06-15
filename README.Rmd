@@ -20,6 +20,7 @@ theme_set(theme_light())
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/tidylo)](https://CRAN.R-project.org/package=tidylo)
+[![R build status](https://github.com/juliasilge/tidylo/workflows/R-CMD-check/badge.svg)](https://github.com/juliasilge/tidylo/actions)
 [![Travis build status](https://travis-ci.org/juliasilge/tidylo.svg?branch=master)](https://travis-ci.org/juliasilge/tidylo)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/juliasilge/tidylo?branch=master&svg=true)](https://ci.appveyor.com/project/juliasilge/tidylo)
 [![Codecov test coverage](https://codecov.io/gh/juliasilge/tidylo/branch/master/graph/badge.svg)](https://codecov.io/gh/juliasilge/tidylo?branch=master)
