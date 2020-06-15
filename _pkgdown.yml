@@ -2,4 +2,4 @@ destination: docs
 
 template:
   params:
-    bootswatch: united
+    bootswatch: yeti
