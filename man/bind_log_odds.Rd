@@ -45,8 +45,9 @@ tidyeval framework.
 }
 \details{
 The arguments \code{set}, \code{feature}, and \code{n}
-are passed by expression and support \link[rlang:quasiquotation]{rlang::quasiquotation};
-you can unquote strings and symbols. Grouping is preserved but ignored.
+are passed by expression and support
+\code{\link[rlang:nse-force]{rlang::quasiquotation}}; you can unquote strings
+and symbols. Grouping is preserved but ignored.
 
 The default empirical Bayes prior inflates feature counts in each group
 by total feature counts across all groups. This is like using a moment
