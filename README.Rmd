@@ -21,9 +21,9 @@ theme_set(theme_light())
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/tidylo)](https://CRAN.R-project.org/package=tidylo)
 [![R build status](https://github.com/juliasilge/tidylo/workflows/R-CMD-check/badge.svg)](https://github.com/juliasilge/tidylo/actions)
-[![Travis build status](https://travis-ci.org/juliasilge/tidylo.svg?branch=master)](https://travis-ci.org/juliasilge/tidylo)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/juliasilge/tidylo?branch=master&svg=true)](https://ci.appveyor.com/project/juliasilge/tidylo)
-[![Codecov test coverage](https://codecov.io/gh/juliasilge/tidylo/branch/master/graph/badge.svg)](https://codecov.io/gh/juliasilge/tidylo?branch=master)
+[![Travis build status](https://travis-ci.org/juliasilge/tidylo.svg?branch=main)](https://travis-ci.org/juliasilge/tidylo)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/juliasilge/tidylo?branch=main&svg=true)](https://ci.appveyor.com/project/juliasilge/tidylo)
+[![Codecov test coverage](https://codecov.io/gh/juliasilge/tidylo/branch/main/graph/badge.svg)](https://codecov.io/gh/juliasilge/tidylo?branch=main)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
@@ -99,6 +99,6 @@ bigram_log_odds %>%
 ### Community Guidelines
 
 This project is released with a
-[Contributor Code of Conduct](https://github.com/juliasilge/tidylo/blob/master/CODE_OF_CONDUCT.md).
+[Contributor Code of Conduct](https://github.com/juliasilge/tidylo/blob/main/CODE_OF_CONDUCT.md).
 By contributing to this project, you agree to abide by its terms. Feedback, bug reports (and fixes!), and feature requests are welcome; file issues or seek support [here](http://github.com/juliasilge/tidylo/issues).
 
