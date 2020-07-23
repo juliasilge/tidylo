@@ -37,7 +37,7 @@ Or you can install the development version from GitHub with [remotes](https://gi
 
 ```r
 library(remotes)
-install_github("juliasilge/tidylo")
+install_github("juliasilge/tidylo", ref = "main")
 ```
 
 ## Example
