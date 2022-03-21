@@ -139,15 +139,13 @@ library(ggplot2)
 
 bigram_log_odds %>%
     group_by(book) %>%
-    top_n(10) %>%
+    slice_max(log_odds_weighted, n = 10) %>%
     ungroup %>%
     mutate(bigram = reorder(bigram, log_odds_weighted)) %>%
-    ggplot(aes(bigram, log_odds_weighted, fill = book)) +
+    ggplot(aes(log_odds_weighted, bigram, fill = book)) +
     geom_col(show.legend = FALSE) +
-    facet_wrap(~book, scales = "free") +
-    coord_flip() +
+    facet_wrap(vars(book), scales = "free") +
     labs(x = NULL)
-#> Selecting by log_odds_weighted
 ```
 
 <img src="man/figures/README-bigram_plot-1.png" width="100%" />
