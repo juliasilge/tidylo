@@ -1,12 +1,15 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
+    collapse = TRUE,
+    comment = "#>",
+    fig.path = "man/figures/README-",
+    out.width = "100%"
 )
 suppressPackageStartupMessages(library(ggplot2))
 theme_set(theme_light())
@@ -20,10 +23,8 @@ theme_set(theme_light())
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/tidylo)](https://CRAN.R-project.org/package=tidylo)
-[![R build status](https://github.com/juliasilge/tidylo/workflows/R-CMD-check/badge.svg)](https://github.com/juliasilge/tidylo/actions)
-[![Travis build status](https://travis-ci.org/juliasilge/tidylo.svg?branch=main)](https://travis-ci.org/juliasilge/tidylo)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/juliasilge/tidylo?branch=main&svg=true)](https://ci.appveyor.com/project/juliasilge/tidylo)
-[![Codecov test coverage](https://codecov.io/gh/juliasilge/tidylo/branch/main/graph/badge.svg)](https://codecov.io/gh/juliasilge/tidylo?branch=main)
+[![R-CMD-check](https://github.com/juliasilge/tidylo/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/juliasilge/tidylo/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/juliasilge/tidylo/branch/main/graph/badge.svg)](https://app.codecov.io/gh/juliasilge/tidylo?branch=main)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
@@ -57,10 +58,11 @@ library(janeaustenr)
 library(tidytext)
 
 tidy_bigrams <- austen_books() %>%
-     unnest_tokens(bigram, text, token = "ngrams", n = 2)
+    unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+    filter(!is.na(bigram))
 
 bigram_counts <- tidy_bigrams %>%
-     count(book, bigram, sort = TRUE)
+    count(book, bigram, sort = TRUE)
 
 bigram_counts
 ```
@@ -73,10 +75,10 @@ What are the bigrams with the highest weighted log odds for these books?
 library(tidylo)
 
 bigram_log_odds <- bigram_counts %>%
-  bind_log_odds(book, bigram, n) 
+    bind_log_odds(book, bigram, n) 
 
 bigram_log_odds %>%
-  arrange(-log_odds_weighted)
+    arrange(-log_odds_weighted)
 ```
 
 The bigrams more likely to come from each book, compared to the others, involve proper nouns. We can make a visualization as well.
@@ -85,20 +87,20 @@ The bigrams more likely to come from each book, compared to the others, involve 
 library(ggplot2)
 
 bigram_log_odds %>%
-  group_by(book) %>%
-  top_n(10) %>%
-  ungroup %>%
-  mutate(bigram = reorder(bigram, log_odds_weighted)) %>%
-  ggplot(aes(bigram, log_odds_weighted, fill = book)) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~book, scales = "free") +
-  coord_flip() +
-  labs(x = NULL)
+    group_by(book) %>%
+    top_n(10) %>%
+    ungroup %>%
+    mutate(bigram = reorder(bigram, log_odds_weighted)) %>%
+    ggplot(aes(bigram, log_odds_weighted, fill = book)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~book, scales = "free") +
+    coord_flip() +
+    labs(x = NULL)
 ```
 
 ### Community Guidelines
 
 This project is released with a
-[Contributor Code of Conduct](https://github.com/juliasilge/tidylo/blob/main/CODE_OF_CONDUCT.md).
+[Contributor Code of Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms. Feedback, bug reports (and fixes!), and feature requests are welcome; file issues or seek support [here](http://github.com/juliasilge/tidylo/issues).
 

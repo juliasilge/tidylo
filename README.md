@@ -74,26 +74,27 @@ library(janeaustenr)
 library(tidytext)
 
 tidy_bigrams <- austen_books() %>%
-     unnest_tokens(bigram, text, token = "ngrams", n = 2)
+    unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+    filter(!is.na(bigram))
 
 bigram_counts <- tidy_bigrams %>%
-     count(book, bigram, sort = TRUE)
+    count(book, bigram, sort = TRUE)
 
 bigram_counts
-#> # A tibble: 300,909 × 3
+#> # A tibble: 300,903 × 3
 #>    book                bigram     n
 #>    <fct>               <chr>  <int>
-#>  1 Emma                <NA>    2817
-#>  2 Pride & Prejudice   <NA>    2556
-#>  3 Sense & Sensibility <NA>    2199
-#>  4 Mansfield Park      <NA>    2151
-#>  5 Northanger Abbey    <NA>    1296
-#>  6 Persuasion          <NA>    1223
-#>  7 Mansfield Park      of the   712
-#>  8 Mansfield Park      to be    612
-#>  9 Emma                to be    586
-#> 10 Mansfield Park      in the   533
-#> # … with 300,899 more rows
+#>  1 Mansfield Park      of the   712
+#>  2 Mansfield Park      to be    612
+#>  3 Emma                to be    586
+#>  4 Mansfield Park      in the   533
+#>  5 Emma                of the   529
+#>  6 Pride & Prejudice   of the   439
+#>  7 Emma                it was   430
+#>  8 Pride & Prejudice   to be    422
+#>  9 Sense & Sensibility to be    418
+#> 10 Emma                in the   416
+#> # … with 300,893 more rows
 ```
 
 Now let’s use the `bind_log_odds()` function from the tidylo package to
@@ -110,24 +111,24 @@ What are the bigrams with the highest weighted log odds for these books?
 library(tidylo)
 
 bigram_log_odds <- bigram_counts %>%
-  bind_log_odds(book, bigram, n) 
+    bind_log_odds(book, bigram, n) 
 
 bigram_log_odds %>%
-  arrange(-log_odds_weighted)
-#> # A tibble: 300,909 × 4
+    arrange(-log_odds_weighted)
+#> # A tibble: 300,903 × 4
 #>    book                bigram                n log_odds_weighted
 #>    <fct>               <chr>             <int>             <dbl>
-#>  1 Mansfield Park      sir thomas          266              27.3
+#>  1 Mansfield Park      sir thomas          266              27.2
 #>  2 Pride & Prejudice   mr darcy            230              27.0
 #>  3 Emma                mr knightley        239              25.9
 #>  4 Sense & Sensibility mrs jennings        185              24.3
 #>  5 Emma                mrs weston          208              24.2
 #>  6 Mansfield Park      miss crawford       196              23.4
 #>  7 Persuasion          captain wentworth   143              23.0
-#>  8 Persuasion          mr elliot           133              22.1
+#>  8 Persuasion          mr elliot           133              22.2
 #>  9 Emma                mr elton            174              22.1
 #> 10 Mansfield Park      mrs norris          148              20.3
-#> # … with 300,899 more rows
+#> # … with 300,893 more rows
 ```
 
 The bigrams more likely to come from each book, compared to the others,
@@ -137,15 +138,15 @@ involve proper nouns. We can make a visualization as well.
 library(ggplot2)
 
 bigram_log_odds %>%
-  group_by(book) %>%
-  top_n(10) %>%
-  ungroup %>%
-  mutate(bigram = reorder(bigram, log_odds_weighted)) %>%
-  ggplot(aes(bigram, log_odds_weighted, fill = book)) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~book, scales = "free") +
-  coord_flip() +
-  labs(x = NULL)
+    group_by(book) %>%
+    top_n(10) %>%
+    ungroup %>%
+    mutate(bigram = reorder(bigram, log_odds_weighted)) %>%
+    ggplot(aes(bigram, log_odds_weighted, fill = book)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~book, scales = "free") +
+    coord_flip() +
+    labs(x = NULL)
 #> Selecting by log_odds_weighted
 ```
 
