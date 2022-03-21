@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">tidylo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0.9000</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -64,8 +60,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="http://github.com/juliasilge/tidylo/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="http://github.com/juliasilge/tidylo/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -79,143 +75,149 @@
 
       
 
-      </header><script src="tidy_log_odds_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Tidy Log Odds</h1>
-                        <h4 class="author">Julia Silge and Tyler Schnoebelen</h4>
+                        <h4 data-toc-skip class="author">Julia Silge and Tyler Schnoebelen</h4>
             
-            <h4 class="date">2020-07-23</h4>
+            <h4 data-toc-skip class="date">2022-03-21</h4>
       
-      <small class="dont-index">Source: <a href="http://github.com/juliasilge/tidylo/blob/master/vignettes/tidy_log_odds.Rmd"><code>vignettes/tidy_log_odds.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="http://github.com/juliasilge/tidylo/blob/HEAD/vignettes/tidy_log_odds.Rmd" class="external-link"><code>vignettes/tidy_log_odds.Rmd</code></a></small>
       <div class="hidden name"><code>tidy_log_odds.Rmd</code></div>
 
     </div>
 
     
     
-<div id="a-motivating-example-what-words-are-important-to-a-text" class="section level2">
-<h2 class="hasAnchor">
-<a href="#a-motivating-example-what-words-are-important-to-a-text" class="anchor"></a>A motivating example: what words are important to a text?</h2>
-<p>There are multiple ways to measure which words (or bigrams, or other units of text) are important in a text. You can count words, or <a href="https://www.tidytextmining.com/tfidf.html">measure tf-idf</a>. This package implements a different approach for measuring which words are important to a text, a <strong>weighted log odds</strong>.</p>
-<p>A log odds ratio is a way of expressing probabilities, and we can weight a log odds ratio so that our implementation does a better job dealing with different combinations of words and documents having different counts. In particular, we use the method outlined in <a href="https://doi.org/10.1093/pan/mpn018">Monroe, Colaresi, and Quinn (2008)</a> for posterior log odds ratios, assuming a multinomial model with a Dirichlet prior. The default prior is <strong>estimated from the data itself</strong>, an empirical Bayesian approach, but an uninformative prior is also available.</p>
+<div class="section level2">
+<h2 id="a-motivating-example-what-words-are-important-to-a-text">A motivating example: what words are important to a text?<a class="anchor" aria-label="anchor" href="#a-motivating-example-what-words-are-important-to-a-text"></a>
+</h2>
+<p>There are multiple ways to measure which words (or bigrams, or other units of text) are important in a text. You can count words, or <a href="https://www.tidytextmining.com/tfidf.html" class="external-link">measure tf-idf</a>. This package implements a different approach for measuring which words are important to a text, a <strong>weighted log odds</strong>.</p>
+<p>A log odds ratio is a way of expressing probabilities, and we can weight a log odds ratio so that our implementation does a better job dealing with different combinations of words and documents having different counts. In particular, we use the method outlined in <a href="https://doi.org/10.1093/pan/mpn018" class="external-link">Monroe, Colaresi, and Quinn (2008)</a> for posterior log odds ratios, assuming a multinomial model with a Dirichlet prior. The default prior is <strong>estimated from the data itself</strong>, an empirical Bayesian approach, but an uninformative prior is also available.</p>
 <p>What does this mean? It means that by weighting using empirical Bayes estimation, we take into account the sampling error in our measurements and acknowledge that we are more certain when we’ve counted something a lot of times and less certain when we’ve counted something only a few times. When weighting by a prior in this way, we focus on differences that are more likely to be real, given the evidence that we have.</p>
 <p>Let’s look at just such an example.</p>
 </div>
-<div id="jane-austen-and-bigrams" class="section level2">
-<h2 class="hasAnchor">
-<a href="#jane-austen-and-bigrams" class="anchor"></a>Jane Austen and bigrams</h2>
-<p>Let’s explore the <a href="https://github.com/juliasilge/janeaustenr">six published, completed novels of Jane Austen</a> and use the <a href="https://github.com/juliasilge/tidytext">tidytext</a> package to count up the bigrams (sequences of two adjacent words) in each novel, focusing on bigrams that include <em>no upper case letters</em>. (We can look at differences other than those involving proper nouns this way.) This weighted log odds approach would work equally well for single words, or other kinds of n-grams.</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">janeaustenr</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidytext</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">stringr</span>)
+<div class="section level2">
+<h2 id="jane-austen-and-bigrams">Jane Austen and bigrams<a class="anchor" aria-label="anchor" href="#jane-austen-and-bigrams"></a>
+</h2>
+<p>Let’s explore the <a href="https://github.com/juliasilge/janeaustenr" class="external-link">six published, completed novels of Jane Austen</a> and use the <a href="https://github.com/juliasilge/tidytext" class="external-link">tidytext</a> package to count up the bigrams (sequences of two adjacent words) in each novel, focusing on bigrams that include <em>no upper case letters</em>. (We can look at differences other than those involving proper nouns this way.) This weighted log odds approach would work equally well for single words, or other kinds of n-grams.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/juliasilge/janeaustenr" class="external-link">janeaustenr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/juliasilge/tidytext" class="external-link">tidytext</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span>
 
-<span class="no">tidy_bigrams</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/janeaustenr/man/austen_books.html">austen_books</a></span>() <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/tidytext/man/unnest_tokens.html">unnest_tokens</a></span>(<span class="no">bigram</span>, <span class="no">text</span>, <span class="kw">token</span><span class="kw">=</span><span class="st">"ngrams"</span>, <span class="kw">n</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">to_lower</span> <span class="kw">=</span> <span class="fl">FALSE</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(!<span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span>(<span class="no">bigram</span>, <span class="st">"[A-Z]"</span>))
+<span class="va">tidy_bigrams</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/janeaustenr/man/austen_books.html" class="external-link">austen_books</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/pkg/tidytext/man/unnest_tokens.html" class="external-link">unnest_tokens</a></span><span class="op">(</span><span class="va">bigram</span>, <span class="va">text</span>, token<span class="op">=</span><span class="st">"ngrams"</span>, n <span class="op">=</span> <span class="fl">2</span>, to_lower <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">bigram</span>, <span class="st">"[A-Z]"</span><span class="op">)</span><span class="op">)</span>
 
-<span class="no">bigram_counts</span> <span class="kw">&lt;-</span> <span class="no">tidy_bigrams</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span>(<span class="no">book</span>, <span class="no">bigram</span>, <span class="kw">sort</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<span class="va">bigram_counts</span> <span class="op">&lt;-</span> <span class="va">tidy_bigrams</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">book</span>, <span class="va">bigram</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="no">bigram_counts</span>
-<span class="co">#&gt; # A tibble: 274,583 x 3</span>
+<span class="va">bigram_counts</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 256,348 × 3</span></span>
 <span class="co">#&gt;    book                bigram     n</span>
-<span class="co">#&gt;    &lt;fct&gt;               &lt;chr&gt;  &lt;int&gt;</span>
-<span class="co">#&gt;  1 Mansfield Park      of the   744</span>
-<span class="co">#&gt;  2 Mansfield Park      to be    613</span>
-<span class="co">#&gt;  3 Emma                to be    595</span>
-<span class="co">#&gt;  4 Mansfield Park      in the   564</span>
-<span class="co">#&gt;  5 Emma                of the   557</span>
-<span class="co">#&gt;  6 Pride &amp; Prejudice   of the   462</span>
-<span class="co">#&gt;  7 Pride &amp; Prejudice   to be    437</span>
-<span class="co">#&gt;  8 Emma                in the   434</span>
-<span class="co">#&gt;  9 Sense &amp; Sensibility of the   430</span>
-<span class="co">#&gt; 10 Sense &amp; Sensibility to be    428</span>
-<span class="co">#&gt; # … with 274,573 more rows</span></pre></body></html></div>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Mansfield Park      of the   708</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Mansfield Park      to be    582</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Emma                to be    574</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Emma                of the   524</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Mansfield Park      in the   520</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Pride &amp; Prejudice   of the   437</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Pride &amp; Prejudice   to be    416</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sense &amp; Sensibility to be    410</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Persuasion          of the   409</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Emma                in the   405</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 256,338 more rows</span></span></code></pre></div>
 <p>Notice that we haven’t removed stop words, or filtered out rarely used words. We have done very little pre-processing of this text data.</p>
-<p>Now let’s use the <code><a href="../reference/bind_log_odds.html">bind_log_odds()</a></code> function from the tidylo package to find the weighted log odds for each bigram. The weighted log odds computed by this function are also <a href="https://en.wikipedia.org/wiki/Standard_score">z-scores</a> for the log odds; this quantity is useful for comparing frequencies across categories or sets but its relationship to an odds ratio is not straightforward after the weighting.</p>
+<p>Now let’s use the <code><a href="../reference/bind_log_odds.html">bind_log_odds()</a></code> function from the tidylo package to find the weighted log odds for each bigram. The weighted log odds computed by this function are also <a href="https://en.wikipedia.org/wiki/Standard_score" class="external-link">z-scores</a> for the log odds; this quantity is useful for comparing frequencies across categories or sets but its relationship to an odds ratio is not straightforward after the weighting.</p>
 <p>What are the bigrams with the highest weighted log odds for these books?</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidylo</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/juliasilge/tidylo" class="external-link">tidylo</a></span><span class="op">)</span>
 
-<span class="no">bigram_log_odds</span> <span class="kw">&lt;-</span> <span class="no">bigram_counts</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/bind_log_odds.html">bind_log_odds</a></span>(<span class="no">book</span>, <span class="no">bigram</span>, <span class="no">n</span>)
+<span class="va">bigram_log_odds</span> <span class="op">&lt;-</span> <span class="va">bigram_counts</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/bind_log_odds.html">bind_log_odds</a></span><span class="op">(</span><span class="va">book</span>, <span class="va">bigram</span>, <span class="va">n</span><span class="op">)</span> 
 
-<span class="no">bigram_log_odds</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(-<span class="no">log_odds_weighted</span>)
-<span class="co">#&gt; # A tibble: 274,583 x 4</span>
+<span class="va">bigram_log_odds</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="op">-</span><span class="va">log_odds_weighted</span><span class="op">)</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 256,348 × 4</span></span>
 <span class="co">#&gt;    book                bigram            n log_odds_weighted</span>
-<span class="co">#&gt;    &lt;fct&gt;               &lt;chr&gt;         &lt;int&gt;             &lt;dbl&gt;</span>
-<span class="co">#&gt;  1 Emma                any thing       164             13.9 </span>
-<span class="co">#&gt;  2 Northanger Abbey    the pump         24              9.51</span>
-<span class="co">#&gt;  3 Sense &amp; Sensibility any thing        61              9.42</span>
-<span class="co">#&gt;  4 Northanger Abbey    pump room        23              9.31</span>
-<span class="co">#&gt;  5 Northanger Abbey    the abbey        22              9.11</span>
-<span class="co">#&gt;  6 Northanger Abbey    the general's    19              8.47</span>
-<span class="co">#&gt;  7 Persuasion          any thing         7              7.78</span>
-<span class="co">#&gt;  8 Emma                any body         68              7.13</span>
-<span class="co">#&gt;  9 Emma                every body       73              6.93</span>
-<span class="co">#&gt; 10 Sense &amp; Sensibility the cottage      31              6.81</span>
-<span class="co">#&gt; # … with 274,573 more rows</span></pre></body></html></div>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Emma                any thing       150             13.3 </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Northanger Abbey    pump room        23              9.32</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Sense &amp; Sensibility any thing        58              9.17</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Northanger Abbey    the pump         22              9.11</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Northanger Abbey    the abbey        20              8.69</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Northanger Abbey    the general's    15              7.53</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Persuasion          any thing         5              7.36</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Emma                any body         61              6.72</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Emma                every body       67              6.61</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Sense &amp; Sensibility the cottage      26              6.28</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 256,338 more rows</span></span></code></pre></div>
 <p>The highest log odds bigrams (bigrams more likely to come from each book, compared to the others) involve concepts specific to each novel, such as the pump room in <em>Northanger Abbey</em> and sister/mother figures in <em>Sense &amp; Sensibility</em>. We can make a visualization as well.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
 
-<span class="no">bigram_log_odds</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(<span class="no">book</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/top_n.html">top_n</a></span>(<span class="fl">10</span>) <span class="kw">%&gt;%</span>
-  <span class="no">ungroup</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">bigram</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html">reorder</a></span>(<span class="no">bigram</span>, <span class="no">log_odds_weighted</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="no">bigram</span>, <span class="no">log_odds_weighted</span>, <span class="kw">fill</span> <span class="kw">=</span> <span class="no">book</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span>(<span class="kw">show.legend</span> <span class="kw">=</span> <span class="fl">FALSE</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span>(~<span class="no">book</span>, <span class="kw">scales</span> <span class="kw">=</span> <span class="st">"free"</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html">coord_flip</a></span>() +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span>(<span class="kw">x</span> <span class="kw">=</span> <span class="kw">NULL</span>)</pre></body></html></div>
+<span class="va">bigram_log_odds</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">book</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/top_n.html" class="external-link">top_n</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="va">ungroup</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>bigram <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">bigram</span>, <span class="va">log_odds_weighted</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">bigram</span>, <span class="va">log_odds_weighted</span>, fill <span class="op">=</span> <span class="va">book</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">book</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html" class="external-link">coord_flip</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
 <p><img src="tidy_log_odds_files/figure-html/bigram_plot-1.png" width="960"></p>
 <p>These bigrams have the highest weighted log odds for each book.</p>
 <p>The proper names of characters tend to be unique from book to book unless you’re looking at a series like <em>Harry Potter</em>. When it comes identifying words or phrases that are unique to a text, a measure like tf-idf does a good job. But because of the way tf-idf is calculated, it cannot distinguish between words that are used in <strong>all</strong> texts.</p>
-<p>For example, the phrase “had been” is used over 100 times in all six Austen novels. The “idf” in tf-idf stands for “inverse document frequency”. When a word is in all the texts, tf-idf is zero for all of them. In weighted log odds, however, each book has a different value; in this case the weighted log odds ranges from 5.64 in <em>Persuasion</em> (very high) down to -2.51 in <em>Sense &amp; Sensibility</em> (which suggests something about the style or content is suppressing the phrase).</p>
+<p>For example, the phrase “had been” is used over 100 times in all six Austen novels. The “idf” in tf-idf stands for “inverse document frequency”. When a word is in all the texts, tf-idf is zero for all of them. In weighted log odds, however, each book has a different value; in this case the weighted log odds ranges from 5.42 in <em>Persuasion</em> (very high) down to -2.27 in <em>Sense &amp; Sensibility</em> (which suggests something about the style or content is suppressing the phrase).</p>
 </div>
-<div id="counting-things-other-than-words" class="section level2">
-<h2 class="hasAnchor">
-<a href="#counting-things-other-than-words" class="anchor"></a>Counting things other than words</h2>
+<div class="section level2">
+<h2 id="counting-things-other-than-words">Counting things other than words<a class="anchor" aria-label="anchor" href="#counting-things-other-than-words"></a>
+</h2>
 <p>Text analysis is a main motivator for this implementation of weighted log odds, but this is a general approach for measuring how much more likely one feature (any kind of feature, not just a word or bigram) is to be associated than another for some set or group (any kind of set, not just a document or book).</p>
 <p>To demonstrate this, let’s look at everybody’s favorite data about cars. What do we know about the relationship between number of gears and engine shape <code>vs</code>?</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">gear_counts</span> <span class="kw">&lt;-</span> <span class="no">mtcars</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span>(<span class="no">vs</span>, <span class="no">gear</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">gear_counts</span> <span class="op">&lt;-</span> <span class="va">mtcars</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">vs</span>, <span class="va">gear</span><span class="op">)</span>
 
-<span class="no">gear_counts</span>
+<span class="va">gear_counts</span>
 <span class="co">#&gt;   vs gear  n</span>
 <span class="co">#&gt; 1  0    3 12</span>
 <span class="co">#&gt; 2  0    4  2</span>
 <span class="co">#&gt; 3  0    5  4</span>
 <span class="co">#&gt; 4  1    3  3</span>
 <span class="co">#&gt; 5  1    4 10</span>
-<span class="co">#&gt; 6  1    5  1</span></pre></body></html></div>
+<span class="co">#&gt; 6  1    5  1</span></code></pre></div>
 <p>Now we can use <code><a href="../reference/bind_log_odds.html">bind_log_odds()</a></code> to find the weighted log odds for each number of gears and engine shape. First, let’s use the default empirical Bayes prior. It regularizes the values.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">regularized</span> <span class="kw">&lt;-</span> <span class="no">gear_counts</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/bind_log_odds.html">bind_log_odds</a></span>(<span class="no">vs</span>, <span class="no">gear</span>, <span class="no">n</span>)
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">regularized</span> <span class="op">&lt;-</span> <span class="va">gear_counts</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/bind_log_odds.html">bind_log_odds</a></span><span class="op">(</span><span class="va">vs</span>, <span class="va">gear</span>, <span class="va">n</span><span class="op">)</span>
 
-<span class="no">regularized</span>
+<span class="va">regularized</span>
 <span class="co">#&gt;   vs gear  n log_odds_weighted</span>
 <span class="co">#&gt; 1  0    3 12         1.1728347</span>
 <span class="co">#&gt; 2  0    4  2        -1.3767516</span>
 <span class="co">#&gt; 3  0    5  4         0.4033125</span>
 <span class="co">#&gt; 4  1    3  3        -1.1354777</span>
 <span class="co">#&gt; 5  1    4 10         1.5661168</span>
-<span class="co">#&gt; 6  1    5  1        -0.4362340</span></pre></body></html></div>
+<span class="co">#&gt; 6  1    5  1        -0.4362340</span></code></pre></div>
 <p>For engine shape <code>vs = 0</code>, having three gears has the highest weighted log odds while for engine shape <code>vs = 1</code>, having four gears has the highest weighted log odds. This dataset is small enough that you can look at the count data and see how this is working.</p>
 <p>Now, let’s use the uninformative prior, and compare to the unweighted log odds. These log odds will be farther from zero than the regularized estimates.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">unregularized</span> <span class="kw">&lt;-</span> <span class="no">gear_counts</span> <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="../reference/bind_log_odds.html">bind_log_odds</a></span>(<span class="no">vs</span>, <span class="no">gear</span>, <span class="no">n</span>, <span class="kw">uninformative</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">unweighted</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">unregularized</span> <span class="op">&lt;-</span> <span class="va">gear_counts</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/bind_log_odds.html">bind_log_odds</a></span><span class="op">(</span><span class="va">vs</span>, <span class="va">gear</span>, <span class="va">n</span>, uninformative <span class="op">=</span> <span class="cn">TRUE</span>, unweighted <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="no">unregularized</span>
+<span class="va">unregularized</span>
 <span class="co">#&gt;   vs gear  n   log_odds log_odds_weighted</span>
 <span class="co">#&gt; 1  0    3 12  0.6968169         1.8912729</span>
 <span class="co">#&gt; 2  0    4  2 -1.2527630        -1.9691060</span>
 <span class="co">#&gt; 3  0    5  4  0.3249262         0.5549172</span>
 <span class="co">#&gt; 4  1    3  3 -0.9673459        -1.7407107</span>
 <span class="co">#&gt; 5  1    4 10  1.1451323         2.8421436</span>
-<span class="co">#&gt; 6  1    5  1 -0.5268260        -0.6570674</span></pre></body></html></div>
+<span class="co">#&gt; 6  1    5  1 -0.5268260        -0.6570674</span></code></pre></div>
 <p>Most importantly, you can notice that this approach is useful both in the initial motivating example of text data but also more generally whenever you have counts in some kind of groups or sets and you want to find what feature is more likely to come from a group, compared to the other groups.</p>
 </div>
   </div>
@@ -231,11 +233,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Tyler Schnoebelen, Julia Silge, Alex Hayes.</p>
+  <p></p>
+<p>Developed by Tyler Schnoebelen, Julia Silge, Alex Hayes.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -243,6 +247,8 @@
 
   
 
+
+  
 
   </body>
 </html>
