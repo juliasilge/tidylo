@@ -1,7 +1,7 @@
 Type: Package
 Package: tidylo
 Title: Weighted Tidy Log Odds Ratio
-Version: 0.2.0
+Version: 0.2.0.9000
 Authors@R: c(
     person("Tyler", "Schnoebelen", , "tjs1976@gmail.com", role = "aut"),
     person("Julia", "Silge", , "julia.silge@gmail.com", role = c("aut", "cre", "cph"),
