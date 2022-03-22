@@ -1,7 +1,7 @@
 url: https://juliasilge.github.io/tidylo/
 
 home:
-  title: An R package for tidy weighted log odds ⚖️
+  title: "tidylo: an R package for tidy weighted log odds ⚖️"
   description: Weight your log odds ratios with an empirical Bayesian prior
 
 template:
