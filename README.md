@@ -156,4 +156,4 @@ Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
 Feedback, bug reports (and fixes!), and feature requests are welcome;
 file issues or seek support
-[here](http://github.com/juliasilge/tidylo/issues).
+[here](https://github.com/juliasilge/tidylo/issues).

@@ -90,7 +90,7 @@ unregularized
 }
 \references{
 \enumerate{
-\item Monroe, B. L., Colaresi, M. P. & Quinn, K. M. Fightin' Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict. Polit. anal. 16, 372-403 (2008). \url{https://doi.org/10.1093/pan/mpn018}
+\item Monroe, B. L., Colaresi, M. P. & Quinn, K. M. Fightin' Words: Lexical Feature Selection and Evaluation for Identifying the Content of Political Conflict. Polit. anal. 16, 372-403 (2008). \doi{10.1093/pan/mpn018}
 \item Minka, T. P. Estimating a Dirichlet distribution. (2012). \url{https://tminka.github.io/papers/dirichlet/minka-dirichlet.pdf}
 }
 }

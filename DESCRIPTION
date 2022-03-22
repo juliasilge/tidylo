@@ -22,8 +22,8 @@ Description: How can we measure how the usage or frequency of some
     an empirical Bayes approach, but an uninformative prior is also
     available.
 License: MIT + file LICENSE
-URL: http://github.com/juliasilge/tidylo
-BugReports: http://github.com/juliasilge/tidylo/issues
+URL: https://github.com/juliasilge/tidylo
+BugReports: https://github.com/juliasilge/tidylo/issues
 Imports: 
     dplyr,
     rlang
