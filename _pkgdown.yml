@@ -1,5 +1,5 @@
 destination: docs
 
 template:
-  params:
-    bootswatch: yeti
+  bootstrap: 5
+  bootswatch: yeti

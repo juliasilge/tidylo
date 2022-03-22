@@ -3,21 +3,21 @@
 
 # tidylo: Weighted Tidy Log Odds Ratio
 
-**Authors:** [Julia Silge](https://juliasilge.com/), [Alex
-Hayes](https://www.alexpghayes.com/), [Tyler
-Schnoebelen](https://www.letslanguage.org/)<br/> **License:**
-[MIT](https://opensource.org/licenses/MIT)
-
 <!-- badges: start -->
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/tidylo)](https://CRAN.R-project.org/package=tidylo)
-[![R-CMD-check](https://github.com/juliasilge/tidylo/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/juliasilge/tidylo/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/juliasilge/tidylo/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/juliasilge/tidylo/actions/workflows/check-standard.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/juliasilge/tidylo/branch/main/graph/badge.svg)](https://app.codecov.io/gh/juliasilge/tidylo?branch=main)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
+
+**Authors:** [Julia Silge](https://juliasilge.com/), [Alex
+Hayes](https://www.alexpghayes.com/), [Tyler
+Schnoebelen](https://www.letslanguage.org/)<br/> **License:**
+[MIT](https://opensource.org/licenses/MIT)
 
 How can we measure how the usage or frequency of some **feature**, such
 as words, differs across some group or **set**, such as documents? One
@@ -46,8 +46,8 @@ Or you can install the development version from GitHub with
 [remotes](https://github.com/r-lib/remotes):
 
 ``` r
-library(remotes)
-install_github("juliasilge/tidylo", ref = "main")
+# install.packages("devtools")
+devtools::install_github("juliasilge/tidylo")
 ```
 
 ## Example
@@ -145,7 +145,7 @@ bigram_log_odds %>%
     ggplot(aes(log_odds_weighted, bigram, fill = book)) +
     geom_col(show.legend = FALSE) +
     facet_wrap(vars(book), scales = "free") +
-    labs(x = NULL)
+    labs(y = NULL)
 ```
 
 <img src="man/figures/README-bigram_plot-1.png" width="100%" />
