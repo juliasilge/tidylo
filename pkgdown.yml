@@ -2,6 +2,6 @@ pandoc: 2.14.2
 pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
-  tidy_log_odds: tidy_log_odds.html
-last_built: 2022-03-22T00:59Z
+  tidylo: tidylo.html
+last_built: 2022-03-22T02:08Z
 
