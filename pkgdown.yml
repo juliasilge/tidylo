@@ -3,7 +3,7 @@ pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   tidylo: tidylo.html
-last_built: 2022-03-22T14:06Z
+last_built: 2022-03-22T14:10Z
 urls:
   reference: https://juliasilge.github.io/tidylo/reference
   article: https://juliasilge.github.io/tidylo/articles
