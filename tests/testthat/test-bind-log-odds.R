@@ -1,5 +1,3 @@
-context("Weighted log odds calculation")
-
 suppressPackageStartupMessages(library(dplyr))
 
 w <- tibble(
@@ -23,8 +21,8 @@ test_that("Can calculate weighted log odds", {
         select(result, document, word, frequency)
     )
 
-    expect_is(result, "tbl_df")
-    expect_is(result$log_odds_weighted, "numeric")
+    expect_s3_class(result, "tbl_df")
+    expect_type(result$log_odds_weighted, "double")
     expect_equal(ncol(result), 4)
     expect_equal(sum(result$log_odds_weighted[c(2, 4:6, 8, 10)] > 0), 6)
 
@@ -46,9 +44,9 @@ test_that("Can get back unweighted log odds", {
         select(result, document, word, frequency)
     )
 
-    expect_is(result, "tbl_df")
-    expect_is(result$log_odds, "numeric")
-    expect_is(result$log_odds_weighted, "numeric")
+    expect_s3_class(result, "tbl_df")
+    expect_type(result$log_odds, "double")
+    expect_type(result$log_odds_weighted, "double")
     expect_equal(ncol(result), 5)
     expect_equal(sum(result$log_odds[c(2, 4:6, 8, 10)] > 0), 6)
 })
@@ -106,8 +104,8 @@ test_that("Weighted log odds with tidyeval works", {
         select(result2, document, word, frequency)
     )
 
-    expect_is(result, "tbl_df")
-    expect_is(result$log_odds_weighted, "numeric")
+    expect_s3_class(result, "tbl_df")
+    expect_type(result$log_odds_weighted, "double")
     expect_equal(sum(result$log_odds_weighted[c(2, 4:6, 8, 10)] > 0), 6)
 
     result3 <- w %>%

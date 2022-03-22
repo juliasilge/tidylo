@@ -1,5 +1,7 @@
 # tidylo (development version)
 
+* Switched to testthat 3e.
+
 # tidylo 0.2.0
 
 * Updated documentation & vignette (as well as CI)
