@@ -10,8 +10,7 @@ status](https://www.r-pkg.org/badges/version/tidylo)](https://CRAN.R-project.org
 [![R-CMD-check](https://github.com/juliasilge/tidylo/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/juliasilge/tidylo/actions/workflows/check-standard.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/juliasilge/tidylo/branch/main/graph/badge.svg)](https://app.codecov.io/gh/juliasilge/tidylo?branch=main)
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 <!-- badges: end -->
 
 **Authors:** [Julia Silge](https://juliasilge.com/), [Alex
@@ -43,7 +42,7 @@ install.packages("tidylo")
 ```
 
 Or you can install the development version from GitHub with
-[remotes](https://github.com/r-lib/remotes):
+[devtools](https://devtools.r-lib.org/):
 
 ``` r
 # install.packages("devtools")

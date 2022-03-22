@@ -3,3 +3,5 @@ destination: docs
 template:
   bootstrap: 5
   bootswatch: pulse
+  bslib:
+    pkgdown-nav-height: 100px
