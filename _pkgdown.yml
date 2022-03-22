@@ -1,7 +1,18 @@
-destination: docs
+url: https://juliasilge.github.io/tidylo/
+
+home:
+  title: An R package for tidy weighted log odds ⚖️
+  description: Weight your log odds ratios with an empirical Bayesian prior
 
 template:
   bootstrap: 5
   bootswatch: pulse
   bslib:
     pkgdown-nav-height: 100px
+  opengraph:
+    image:
+      src: man/figures/README-bigram_plot-1.png
+      alt: "Bar chart for tidy log odds of bigrams"
+    twitter:
+      creator: "@juliasilge"
+      card: summary_large_image
