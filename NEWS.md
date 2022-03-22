@@ -1,4 +1,4 @@
-# tidylo (development version)
+# tidylo 0.2.0
 
 * Updated documentation & vignette (as well as CI)
 

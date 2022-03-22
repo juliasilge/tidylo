@@ -1,7 +1,7 @@
 Type: Package
 Package: tidylo
 Title: Weighted Tidy Log Odds Ratio
-Version: 0.1.0.9000
+Version: 0.2.0
 Authors@R: c(
     person("Tyler", "Schnoebelen", , "tjs1976@gmail.com", role = "aut"),
     person("Julia", "Silge", , "julia.silge@gmail.com", role = c("aut", "cre", "cph"),
@@ -22,7 +22,8 @@ Description: How can we measure how the usage or frequency of some
     an empirical Bayes approach, but an uninformative prior is also
     available.
 License: MIT + file LICENSE
-URL: https://github.com/juliasilge/tidylo
+URL: https://juliasilge.github.io/tidylo/,
+    https://github.com/juliasilge/tidylo
 BugReports: https://github.com/juliasilge/tidylo/issues
 Imports: 
     dplyr,
