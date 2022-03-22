@@ -2,4 +2,4 @@ destination: docs
 
 template:
   bootstrap: 5
-  bootswatch: yeti
+  bootswatch: pulse

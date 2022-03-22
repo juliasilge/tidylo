@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# tidylo: Weighted Tidy Log Odds Ratio
+# tidylo: Weighted Tidy Log Odds Ratio ⚖️
 
 <!-- badges: start -->
 
@@ -140,7 +140,7 @@ library(ggplot2)
 bigram_log_odds %>%
     group_by(book) %>%
     slice_max(log_odds_weighted, n = 10) %>%
-    ungroup %>%
+    ungroup() %>%
     mutate(bigram = reorder(bigram, log_odds_weighted)) %>%
     ggplot(aes(log_odds_weighted, bigram, fill = book)) +
     geom_col(show.legend = FALSE) +
